@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://5df4hbaukug3"]
+
+[ext_resource type="Script" uid="uid://63n3rn3wwogc" path="res://scripts/systems/objective.gd" id="1_88ysa"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0ygf3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_etxog"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_liwut"]
+material = SubResource("StandardMaterial3D_etxog")
+
+[node name="Objective" type="Area3D" unique_id=2046545273]
+script = ExtResource("1_88ysa")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1928605816]
+shape = SubResource("BoxShape3D_0ygf3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1868421394]
+mesh = SubResource("BoxMesh_liwut")

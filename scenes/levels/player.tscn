@@ -35,3 +35,27 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "+"
+
+[node name="HealthLabel" type="Label" parent="CanvasLayer" unique_id=1504444837]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 24
+text = "HP: 10/10"
+
+[node name="BlockLabel" type="Label" parent="CanvasLayer" unique_id=1699363108]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 20
+text = "Bloque: Muro"
+
+[node name="EnemyLabel" type="Label" parent="CanvasLayer" unique_id=563525913]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 20
+text = "Enemigos: 0"
+
+[node name="HintLabel" type="Label" parent="CanvasLayer" unique_id=1499195122]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 20
+text = "Llega al objetivo verde"

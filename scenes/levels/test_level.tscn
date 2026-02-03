@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://bccams3wldrtx" path="res://scenes/levels/player.tscn" id="1_jbqir"]
 [ext_resource type="Script" uid="uid://xjuuqe0pmn72" path="res://scripts/systems/target.gd" id="2_yautc"]
+[ext_resource type="PackedScene" uid="uid://c68uvd23njnbf" path="res://scenes/enemies/enemy.tscn" id="3_fr1um"]
+[ext_resource type="PackedScene" uid="uid://5df4hbaukug3" path="res://scenes/levels/objective.tscn" id="4_v45ci"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3hp5k"]
 size = Vector3(20, 0.2, 20)
@@ -36,3 +38,15 @@ shape = SubResource("BoxShape3D_jbqir")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Target" unique_id=865435446]
 mesh = SubResource("BoxMesh_yautc")
+
+[node name="Enemy" parent="." unique_id=1718832985 instance=ExtResource("3_fr1um")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
+
+[node name="Objective" parent="." unique_id=2046545273 instance=ExtResource("4_v45ci")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -15)
+
+[node name="Objective3" parent="." unique_id=566459035 instance=ExtResource("4_v45ci")]
+transform = Transform3D(-0.03598505, 0.99782693, -0.05519456, -0.101647675, 0.05128926, 0.9934975, 0.99416953, 0.041361418, 0.09958115, 8, -0.5, -25)
+
+[node name="Objective2" parent="." unique_id=703930853 instance=ExtResource("4_v45ci")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -15)
