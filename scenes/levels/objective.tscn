@@ -14,6 +14,7 @@ material = SubResource("StandardMaterial3D_etxog")
 script = ExtResource("1_88ysa")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1928605816]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04026413, 0, 0)
 shape = SubResource("BoxShape3D_0ygf3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1868421394]
