@@ -1,0 +1,321 @@
+[gd_scene format=3 uid="uid://dn3xs2lvl02nx"]
+
+[ext_resource type="PackedScene" uid="uid://bccams3wldrtx" path="res://scenes/levels/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://5df4hbaukug3" path="res://scenes/levels/objective.tscn" id="2_objective"]
+[ext_resource type="PackedScene" uid="uid://c68uvd23njnbf" path="res://scenes/enemies/enemy.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" uid="uid://dbm04swh70bfi" path="res://scenes/enemies/enemy_fast.tscn" id="4_enemy_fast"]
+[ext_resource type="PackedScene" uid="uid://b4yd8ktdavv5d" path="res://scenes/enemies/enemy_tank.tscn" id="5_enemy_tank"]
+[ext_resource type="PackedScene" uid="uid://v0aevj5kyk2" path="res://scenes/enemies/enemy_ranged.tscn" id="6_enemy_ranged"]
+[ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="8_pause"]
+[ext_resource type="PackedScene" uid="uid://bthvpxpuep2au" path="res://scenes/ui/game_over.tscn" id="9_gameover"]
+
+[sub_resource type="StandardMaterial3D" id="floor_mat"]
+albedo_color = Color(0.27, 0.27, 0.3, 1)
+metallic = 0.1
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="wall_mat"]
+albedo_color = Color(0.42, 0.42, 0.45, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="crate_mat"]
+albedo_color = Color(0.5, 0.32, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="catwalk_mat"]
+albedo_color = Color(0.55, 0.42, 0.25, 1)
+metallic = 0.5
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="stair_mat"]
+albedo_color = Color(0.5, 0.5, 0.55, 1)
+metallic = 0.4
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="platform_mat"]
+albedo_color = Color(0.38, 0.4, 0.45, 1)
+metallic = 0.4
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="accent_mat"]
+albedo_color = Color(0.75, 0.4, 0.15, 1)
+metallic = 0.6
+roughness = 0.5
+
+[sub_resource type="Environment" id="env_indus"]
+background_mode = 1
+background_color = Color(0.1, 0.1, 0.13, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.65, 0.6, 0.55, 1)
+ambient_light_energy = 0.45
+
+[node name="Level02" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env_indus")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0, 0.5, 0.354, 0.7071, -0.612, -0.354, 0.7071, 0.612, 0, 15, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 0.9
+shadow_enabled = true
+
+[node name="Floor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -20)
+use_collision = true
+size = Vector3(35, 1, 90)
+material_override = SubResource("floor_mat")
+
+[node name="SpawnSouthWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 17)
+use_collision = true
+size = Vector3(8, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="SpawnEastWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 13.5)
+use_collision = true
+size = Vector3(0.5, 4, 7)
+material_override = SubResource("wall_mat")
+
+[node name="SpawnWestWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 13.5)
+use_collision = true
+size = Vector3(0.5, 4, 7)
+material_override = SubResource("wall_mat")
+
+[node name="Corridor1EastWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 2.5)
+use_collision = true
+size = Vector3(0.5, 4, 15)
+material_override = SubResource("wall_mat")
+
+[node name="Corridor1WestWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 2.5)
+use_collision = true
+size = Vector3(0.5, 4, 15)
+material_override = SubResource("wall_mat")
+
+[node name="Corridor1AccentEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.2, 2.5)
+use_collision = false
+size = Vector3(0.2, 0.4, 14.5)
+material_override = SubResource("accent_mat")
+
+[node name="Corridor1AccentWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.2, 2.5)
+use_collision = false
+size = Vector3(0.2, 0.4, 14.5)
+material_override = SubResource("accent_mat")
+
+[node name="Crate_C1_1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.75, 5)
+use_collision = true
+size = Vector3(1.5, 1.5, 1.5)
+material_override = SubResource("crate_mat")
+
+[node name="Crate_C1_2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.75, 0)
+use_collision = true
+size = Vector3(1.5, 1.5, 1.5)
+material_override = SubResource("crate_mat")
+
+[node name="Enemy1" parent="." instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0)
+
+[node name="Enemy2" parent="." instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, -3)
+
+[node name="MidRoomSouthWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 2, -5)
+use_collision = true
+size = Vector3(5, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="MidRoomSouthEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2, -5)
+use_collision = true
+size = Vector3(5, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="MidRoomEastWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, -12.5)
+use_collision = true
+size = Vector3(0.5, 4, 15)
+material_override = SubResource("wall_mat")
+
+[node name="MidRoomWestWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, -12.5)
+use_collision = true
+size = Vector3(0.5, 4, 15)
+material_override = SubResource("wall_mat")
+
+[node name="MidRoomNorthWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 2, -20)
+use_collision = true
+size = Vector3(5, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="MidRoomNorthEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2, -20)
+use_collision = true
+size = Vector3(5, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="Catwalk" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.5, -12.5)
+use_collision = true
+size = Vector3(3, 1, 13)
+material_override = SubResource("catwalk_mat")
+
+[node name="CatwalkAccent" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.05, -12.5)
+use_collision = false
+size = Vector3(3.1, 0.1, 13.1)
+material_override = SubResource("accent_mat")
+
+[node name="Crate_M_1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, -10)
+use_collision = true
+size = Vector3(2, 2, 2)
+material_override = SubResource("crate_mat")
+
+[node name="Crate_M_2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.75, -16)
+use_collision = true
+size = Vector3(1.5, 1.5, 1.5)
+material_override = SubResource("crate_mat")
+
+[node name="Crate_M_3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -14)
+use_collision = true
+size = Vector3(1.5, 1.5, 1.5)
+material_override = SubResource("crate_mat")
+
+[node name="EnemyFast1" parent="." instance=ExtResource("4_enemy_fast")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, -8)
+
+[node name="EnemyFast2" parent="." instance=ExtResource("4_enemy_fast")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, -17)
+
+[node name="Corridor2EastWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -25)
+use_collision = true
+size = Vector3(0.5, 4, 10)
+material_override = SubResource("wall_mat")
+
+[node name="Corridor2WestWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -25)
+use_collision = true
+size = Vector3(0.5, 4, 10)
+material_override = SubResource("wall_mat")
+
+[node name="Crate_C2_1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1, -23)
+use_collision = true
+size = Vector3(2, 2, 2)
+material_override = SubResource("crate_mat")
+
+[node name="Crate_C2_2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1, -27)
+use_collision = true
+size = Vector3(2, 2, 2)
+material_override = SubResource("crate_mat")
+
+[node name="EnemyTank1" parent="." instance=ExtResource("5_enemy_tank")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, -22)
+
+[node name="EnemyTank2" parent="." instance=ExtResource("5_enemy_tank")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -28)
+
+[node name="FinalSouthWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -30)
+use_collision = true
+size = Vector3(8, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="FinalSouthEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -30)
+use_collision = true
+size = Vector3(8, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="FinalEastWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -41)
+use_collision = true
+size = Vector3(0.5, 4, 22)
+material_override = SubResource("wall_mat")
+
+[node name="FinalWestWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2, -41)
+use_collision = true
+size = Vector3(0.5, 4, 22)
+material_override = SubResource("wall_mat")
+
+[node name="FinalNorthWall" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -52)
+use_collision = true
+size = Vector3(24, 4, 0.5)
+material_override = SubResource("wall_mat")
+
+[node name="FinalCrate1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1, -34)
+use_collision = true
+size = Vector3(2, 2, 2)
+material_override = SubResource("crate_mat")
+
+[node name="FinalCrate2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1, -36)
+use_collision = true
+size = Vector3(2, 2, 2)
+material_override = SubResource("crate_mat")
+
+[node name="FinalStair1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -42)
+use_collision = true
+size = Vector3(5, 1, 2)
+material_override = SubResource("stair_mat")
+
+[node name="FinalStair2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -44)
+use_collision = true
+size = Vector3(5, 1, 2)
+material_override = SubResource("stair_mat")
+
+[node name="FinalPlatform" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -48)
+use_collision = true
+size = Vector3(20, 2, 6)
+material_override = SubResource("platform_mat")
+
+[node name="PlatformCoverEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3, -46)
+use_collision = true
+size = Vector3(3, 2, 0.5)
+material_override = SubResource("crate_mat")
+
+[node name="PlatformCoverWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3, -46)
+use_collision = true
+size = Vector3(3, 2, 0.5)
+material_override = SubResource("crate_mat")
+
+[node name="EnemyRanged1" parent="." instance=ExtResource("6_enemy_ranged")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3, -49)
+
+[node name="EnemyRanged2" parent="." instance=ExtResource("6_enemy_ranged")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 3, -49)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 13)
+
+[node name="Objective" parent="." instance=ExtResource("2_objective")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -50)
+
+[node name="HUD" parent="." instance=ExtResource("7_hud")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("8_pause")]
+
+[node name="GameOver" parent="." instance=ExtResource("9_gameover")]
