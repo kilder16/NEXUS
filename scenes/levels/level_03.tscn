@@ -1,0 +1,598 @@
+[gd_scene format=3 uid="uid://dn3xs3lvl03nx"]
+
+[ext_resource type="PackedScene" uid="uid://bccams3wldrtx" path="res://scenes/levels/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://5df4hbaukug3" path="res://scenes/levels/objective.tscn" id="2_objective"]
+[ext_resource type="PackedScene" uid="uid://c68uvd23njnbf" path="res://scenes/enemies/enemy.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" uid="uid://dbm04swh70bfi" path="res://scenes/enemies/enemy_fast.tscn" id="4_enemy_fast"]
+[ext_resource type="PackedScene" uid="uid://b4yd8ktdavv5d" path="res://scenes/enemies/enemy_tank.tscn" id="5_enemy_tank"]
+[ext_resource type="PackedScene" uid="uid://v0aevj5kyk2" path="res://scenes/enemies/enemy_ranged.tscn" id="6_enemy_ranged"]
+[ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="8_pause"]
+[ext_resource type="PackedScene" uid="uid://bthvpxpuep2au" path="res://scenes/ui/game_over.tscn" id="9_gameover"]
+
+[sub_resource type="Environment" id="env_military"]
+background_mode = 1
+background_color = Color(0.04, 0.05, 0.07, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.4, 0.45, 0.55, 1)
+ambient_light_energy = 0.2
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.15
+
+[sub_resource type="StandardMaterial3D" id="concrete_floor"]
+albedo_color = Color(0.22, 0.22, 0.24, 1)
+metallic = 0.05
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="concrete_wall"]
+albedo_color = Color(0.38, 0.37, 0.36, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="metal_rust"]
+albedo_color = Color(0.55, 0.32, 0.16, 1)
+metallic = 0.7
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="metal_dark"]
+albedo_color = Color(0.25, 0.27, 0.3, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="danger_yellow"]
+albedo_color = Color(0.95, 0.78, 0.1, 1)
+emission_enabled = true
+emission = Color(0.4, 0.32, 0.05, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="metal_catwalk"]
+albedo_color = Color(0.5, 0.42, 0.32, 1)
+metallic = 0.6
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="crate_military"]
+albedo_color = Color(0.3, 0.38, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="vehicle_olive"]
+albedo_color = Color(0.28, 0.32, 0.18, 1)
+metallic = 0.3
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="tire_dark"]
+albedo_color = Color(0.08, 0.08, 0.1, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="barrel_red"]
+albedo_color = Color(0.55, 0.18, 0.12, 1)
+metallic = 0.4
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="concrete_cracked"]
+albedo_color = Color(0.28, 0.26, 0.23, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="screen_blue"]
+albedo_color = Color(0.1, 0.4, 0.7, 1)
+emission_enabled = true
+emission = Color(0.15, 0.5, 0.9, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="StandardMaterial3D" id="emergency_red"]
+albedo_color = Color(0.9, 0.15, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.2, 0.1, 1)
+emission_energy_multiplier = 1.5
+
+[node name="Level03" type="Node3D" unique_id=19941514]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2028357913]
+environment = SubResource("env_military")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1779459685]
+transform = Transform3D(0.866, 0, 0.5, 0.354, 0.7071, -0.612, -0.354, 0.7071, 0.612, 0, 18, -10)
+light_color = Color(0.7, 0.8, 1, 1)
+light_energy = 0.5
+shadow_enabled = true
+
+[node name="EmergencyLight_Hangar1" type="OmniLight3D" parent="." unique_id=1150609200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 3.5, -3)
+light_color = Color(1, 0.2, 0.15, 1)
+light_energy = 2.5
+omni_range = 8.0
+
+[node name="EmergencyLight_Hangar2" type="OmniLight3D" parent="." unique_id=311542623]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 3.5, -17)
+light_color = Color(1, 0.2, 0.15, 1)
+light_energy = 2.5
+omni_range = 8.0
+
+[node name="EmergencyLight_Stairwell" type="OmniLight3D" parent="." unique_id=2080367278]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, -32)
+light_color = Color(1, 0.25, 0.1, 1)
+light_energy = 2.0
+omni_range = 6.0
+
+[node name="EmergencyLight_Control1" type="OmniLight3D" parent="." unique_id=1282288625]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 7, -45)
+light_color = Color(1, 0.2, 0.15, 1)
+light_energy = 2.0
+omni_range = 7.0
+
+[node name="EmergencyLight_Control2" type="OmniLight3D" parent="." unique_id=1309709220]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 7, -50)
+light_color = Color(1, 0.2, 0.15, 1)
+light_energy = 2.0
+omni_range = 7.0
+
+[node name="ConsoleScreenLight" type="OmniLight3D" parent="." unique_id=1275529221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -53)
+light_color = Color(0.3, 0.6, 1, 1)
+light_energy = 1.5
+
+[node name="Floor" type="CSGBox3D" parent="." unique_id=1193962956]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.008845329, -0.4662285, -22.016193)
+material_override = SubResource("concrete_floor")
+use_collision = true
+size = Vector3(40, 1, 90)
+
+[node name="SpawnSouthWall" type="CSGBox3D" parent="." unique_id=18520170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 18)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(10, 4, 0.5)
+
+[node name="SpawnEastWall" type="CSGBox3D" parent="." unique_id=1757841599]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, 14)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 8)
+
+[node name="SpawnWestWall" type="CSGBox3D" parent="." unique_id=1035026392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2, 14)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 8)
+
+[node name="SpawnNorthEast" type="CSGBox3D" parent="." unique_id=1364440675]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 10)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(2, 4, 0.5)
+
+[node name="SpawnNorthWest" type="CSGBox3D" parent="." unique_id=1453512464]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 10)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(2, 4, 0.5)
+
+[node name="C1EastWall" type="CSGBox3D" parent="." unique_id=1270701833]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2, 5)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="C1WestWall" type="CSGBox3D" parent="." unique_id=2134427707]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2, 5)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="C1Pipe1" type="CSGBox3D" parent="." unique_id=200920076]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.65, 3.2, 2.5)
+material_override = SubResource("metal_rust")
+size = Vector3(0.25, 0.25, 14)
+
+[node name="C1Pipe2" type="CSGBox3D" parent="." unique_id=1256541376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 3.5, 2.5)
+material_override = SubResource("metal_rust")
+size = Vector3(0.25, 0.25, 14)
+
+[node name="C1Cable" type="CSGBox3D" parent="." unique_id=277479543]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7, 2.5)
+material_override = SubResource("metal_dark")
+size = Vector3(0.1, 0.1, 10)
+
+[node name="C1WarningSign" type="CSGBox3D" parent="." unique_id=10117767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.74, 2.5, 5)
+material_override = SubResource("danger_yellow")
+size = Vector3(0.05, 0.6, 0.6)
+
+[node name="Enemy1" parent="." unique_id=1378061927 instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 4)
+
+[node name="Enemy2" parent="." unique_id=1320652057 instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 8)
+
+[node name="HangarSouthEast" type="CSGBox3D" parent="." unique_id=652739822]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, 0)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(12, 4, 0.5)
+
+[node name="HangarSouthWest" type="CSGBox3D" parent="." unique_id=2001328885]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, 0)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(12, 4, 0.5)
+
+[node name="HangarEastWall" type="CSGBox3D" parent="." unique_id=1077128250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2, -10)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 20)
+
+[node name="HangarWestWall" type="CSGBox3D" parent="." unique_id=497247655]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 2, -10)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 20)
+
+[node name="HangarNorthEast" type="CSGBox3D" parent="." unique_id=1816598168]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, -20)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(12, 4, 0.5)
+
+[node name="HangarNorthWest" type="CSGBox3D" parent="." unique_id=1759323369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, -20)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(12, 4, 0.5)
+
+[node name="HangarPipeWest" type="CSGBox3D" parent="." unique_id=1744630078]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.6, 3.3, -10)
+material_override = SubResource("metal_rust")
+size = Vector3(0.3, 0.3, 19.5)
+
+[node name="HangarPipeNorth" type="CSGBox3D" parent="." unique_id=1867527522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.3, -19.6)
+material_override = SubResource("metal_rust")
+size = Vector3(23, 0.3, 0.3)
+
+[node name="HangarPipeLow" type="CSGBox3D" parent="." unique_id=1742927800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.6, 1, -10)
+material_override = SubResource("metal_dark")
+size = Vector3(0.2, 0.2, 19.5)
+
+[node name="HangarCable1" type="CSGBox3D" parent="." unique_id=1823688947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3.7, -10)
+material_override = SubResource("metal_dark")
+size = Vector3(0.08, 0.08, 18)
+
+[node name="HangarCable2" type="CSGBox3D" parent="." unique_id=1312130123]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 3.7, -10)
+material_override = SubResource("metal_dark")
+size = Vector3(0.08, 0.08, 18)
+
+[node name="HangarDangerSign" type="CSGBox3D" parent="." unique_id=688384435]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7, 2.5, -10)
+material_override = SubResource("danger_yellow")
+size = Vector3(0.05, 0.8, 0.8)
+
+[node name="Catwalk" type="CSGBox3D" parent="." unique_id=570560604]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 3.75, -14.5)
+material_override = SubResource("metal_catwalk")
+use_collision = true
+size = Vector3(5, 0.5, 9)
+
+[node name="CatwalkRailing" type="CSGBox3D" parent="." unique_id=1083088230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4.4, -14.5)
+material_override = SubResource("metal_rust")
+use_collision = true
+size = Vector3(0.15, 0.8, 9)
+
+[node name="CatwalkSupportS" type="CSGBox3D" parent="." unique_id=144125613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 1.875, -10.5)
+material_override = SubResource("metal_dark")
+size = Vector3(0.4, 3.75, 0.4)
+
+[node name="CatwalkSupportN" type="CSGBox3D" parent="." unique_id=136501612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 1.875, -18)
+material_override = SubResource("metal_dark")
+size = Vector3(0.4, 3.75, 0.4)
+
+[node name="VentCrate1" type="CSGBox3D" parent="." unique_id=611682115]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0.5, -3)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 1, 2)
+
+[node name="VentCrate2" type="CSGBox3D" parent="." unique_id=888658451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 1.5, -5)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 1, 2)
+
+[node name="VentCrate3" type="CSGBox3D" parent="." unique_id=1808016828]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2.5, -7)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 1, 2)
+
+[node name="VentCrate4" type="CSGBox3D" parent="." unique_id=1362516721]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 3.5, -9)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 1, 2)
+
+[node name="VehicleChassis" type="CSGBox3D" parent="." unique_id=116812573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.7, -10)
+material_override = SubResource("vehicle_olive")
+use_collision = true
+size = Vector3(5, 1.4, 2.5)
+
+[node name="VehicleCabin" type="CSGBox3D" parent="." unique_id=331673039]
+transform = Transform3D(0.985, 0.174, 0, -0.174, 0.985, 0, 0, 0, 1, -3, 1.9, -10)
+material_override = SubResource("vehicle_olive")
+use_collision = true
+size = Vector3(2.2, 1.2, 2.3)
+
+[node name="VehicleWheelFL" type="CSGBox3D" parent="." unique_id=177685956]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.4, -8.7)
+material_override = SubResource("tire_dark")
+size = Vector3(1.2, 0.8, 0.5)
+
+[node name="VehicleWheelFR" type="CSGBox3D" parent="." unique_id=1203528597]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.4, -11.3)
+material_override = SubResource("tire_dark")
+size = Vector3(1.2, 0.8, 0.5)
+
+[node name="VehicleWheelRL" type="CSGBox3D" parent="." unique_id=636137323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.4, -8.7)
+material_override = SubResource("tire_dark")
+size = Vector3(1.2, 0.8, 0.5)
+
+[node name="VehicleWheelRR" type="CSGBox3D" parent="." unique_id=1249499475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.4, -11.3)
+material_override = SubResource("tire_dark")
+size = Vector3(1.2, 0.8, 0.5)
+
+[node name="VehicleBrokenPart" type="CSGBox3D" parent="." unique_id=1928655654]
+transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, -8.5, 0.4, -9)
+material_override = SubResource("vehicle_olive")
+use_collision = true
+size = Vector3(1.5, 0.3, 1.2)
+
+[node name="Barrel1" type="CSGCylinder3D" parent="." unique_id=1831270720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0.6, -3)
+material_override = SubResource("barrel_red")
+use_collision = true
+height = 1.2
+
+[node name="Barrel2" type="CSGCylinder3D" parent="." unique_id=1871599427]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0.6, -5)
+material_override = SubResource("barrel_red")
+use_collision = true
+height = 1.2
+
+[node name="Barrel3" type="CSGCylinder3D" parent="." unique_id=278855328]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.6, -17)
+material_override = SubResource("barrel_red")
+use_collision = true
+height = 1.2
+
+[node name="Barrel4" type="CSGCylinder3D" parent="." unique_id=276374708]
+transform = Transform3D(0.866, 0, 0.5, -0.5, 0, 0.866, 0, -1, 0, 6, 0.5, -3)
+material_override = SubResource("barrel_red")
+use_collision = true
+height = 1.2
+
+[node name="ConcreteRubble1" type="CSGBox3D" parent="." unique_id=1028817439]
+transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, 4, 0.3, -16)
+material_override = SubResource("concrete_cracked")
+use_collision = true
+size = Vector3(2, 0.6, 1.5)
+
+[node name="ConcreteRubble2" type="CSGBox3D" parent="." unique_id=1572445145]
+transform = Transform3D(1, 0, 0, 0, 0.985, 0.174, 0, -0.174, 0.985, -8, 0.3, -3)
+material_override = SubResource("concrete_cracked")
+use_collision = true
+size = Vector3(1.5, 0.5, 1.5)
+
+[node name="ConcreteRubble3" type="CSGBox3D" parent="." unique_id=2125395635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.4, -8)
+material_override = SubResource("concrete_cracked")
+use_collision = true
+size = Vector3(1.2, 0.8, 1.2)
+
+[node name="HangarCrate1" type="CSGBox3D" parent="." unique_id=1909835104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -16)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="EnemyFast1" parent="." unique_id=1388914629 instance=ExtResource("4_enemy_fast")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -5)
+
+[node name="EnemyFast2" parent="." unique_id=285076496 instance=ExtResource("4_enemy_fast")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -17)
+
+[node name="EnemyTank_Hangar" parent="." unique_id=1092878938 instance=ExtResource("5_enemy_tank")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -13)
+
+[node name="EnemyRanged_Catwalk" parent="." unique_id=183868840 instance=ExtResource("6_enemy_ranged")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 5, -16)
+
+[node name="C2EastWall" type="CSGBox3D" parent="." unique_id=489904155]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2, -25)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="C2WestWall" type="CSGBox3D" parent="." unique_id=769373929]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2, -25)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="C2Crate1" type="CSGBox3D" parent="." unique_id=758470549]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1, -23)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="C2Crate2" type="CSGBox3D" parent="." unique_id=1903525526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 1, -27)
+material_override = SubResource("crate_military")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="EnemyTank_C2" parent="." unique_id=1332943515 instance=ExtResource("5_enemy_tank")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -25)
+
+[node name="StairwellSouthEast" type="CSGBox3D" parent="." unique_id=1663244588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -30)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(2, 4, 0.5)
+
+[node name="StairwellSouthWest" type="CSGBox3D" parent="." unique_id=472588881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -30)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(2, 4, 0.5)
+
+[node name="StairwellEastWall" type="CSGBox3D" parent="." unique_id=119665847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, -35)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="StairwellWestWall" type="CSGBox3D" parent="." unique_id=947847551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2, -35)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 10)
+
+[node name="Ramp" type="CSGBox3D" parent="." unique_id=639749801]
+transform = Transform3D(-1, 0, 0, 0, 0.7809, 0.6247, 0, 0.6247, -0.7809, 0, 1.883, -32.594)
+material_override = SubResource("metal_dark")
+use_collision = true
+size = Vector3(4, 0.3, 6.4)
+
+[node name="RampStripeEdge" type="CSGBox3D" parent="." unique_id=1963621230]
+transform = Transform3D(-1, 0, 0, 0, 0.7809, 0.6247, 0, 0.6247, -0.7809, 1.9, 1.95, -32.594)
+material_override = SubResource("danger_yellow")
+size = Vector3(0.1, 0.05, 6.4)
+
+[node name="RampStripeEdge2" type="CSGBox3D" parent="." unique_id=255732348]
+transform = Transform3D(-1, 0, 0, 0, 0.7809, 0.6247, 0, 0.6247, -0.7809, -1.9, 1.95, -32.594)
+material_override = SubResource("danger_yellow")
+size = Vector3(0.1, 0.05, 6.4)
+
+[node name="UpperFloor" type="CSGBox3D" parent="." unique_id=566720381]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -45)
+material_override = SubResource("metal_dark")
+use_collision = true
+size = Vector3(24, 0.5, 20)
+
+[node name="UpperFloorEdgeStripe" type="CSGBox3D" parent="." unique_id=559382835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.05, -35.1)
+material_override = SubResource("danger_yellow")
+size = Vector3(24, 0.1, 0.2)
+
+[node name="ControlSouthEast" type="CSGBox3D" parent="." unique_id=1397889835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 6, -35)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(9, 4, 0.5)
+
+[node name="ControlSouthWest" type="CSGBox3D" parent="." unique_id=1454979124]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 6, -35)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(9, 4, 0.5)
+
+[node name="ControlEastWall" type="CSGBox3D" parent="." unique_id=1595580008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 6, -45)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 20)
+
+[node name="ControlWestWall" type="CSGBox3D" parent="." unique_id=629528742]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 6, -45)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(0.5, 4, 20)
+
+[node name="ControlNorthWall" type="CSGBox3D" parent="." unique_id=669198008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -55)
+material_override = SubResource("concrete_wall")
+use_collision = true
+size = Vector3(24, 4, 0.5)
+
+[node name="ControlPipeCeiling" type="CSGBox3D" parent="." unique_id=1963121682]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 7.7, -45)
+material_override = SubResource("metal_rust")
+size = Vector3(0.3, 0.3, 19)
+
+[node name="ControlCableNS" type="CSGBox3D" parent="." unique_id=1179614156]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 7.7, -45)
+material_override = SubResource("metal_dark")
+size = Vector3(0.1, 0.1, 19)
+
+[node name="ControlConsoleBase" type="CSGBox3D" parent="." unique_id=1039861335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -53)
+material_override = SubResource("metal_dark")
+use_collision = true
+size = Vector3(8, 1, 2)
+
+[node name="ControlConsoleScreen" type="CSGBox3D" parent="." unique_id=623984742]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.45, -53.9)
+material_override = SubResource("screen_blue")
+size = Vector3(5, 0.9, 0.1)
+
+[node name="ControlConsoleLightRed" type="CSGBox3D" parent="." unique_id=1821382047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 5.2, -53.4)
+material_override = SubResource("emergency_red")
+size = Vector3(0.4, 0.2, 0.2)
+
+[node name="ControlConsoleLightGreen" type="CSGBox3D" parent="." unique_id=122477806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 5.2, -53.4)
+material_override = SubResource("danger_yellow")
+size = Vector3(0.4, 0.2, 0.2)
+
+[node name="ControlSidePanelEast" type="CSGBox3D" parent="." unique_id=2102930376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 5.5, -50)
+material_override = SubResource("metal_dark")
+use_collision = true
+size = Vector3(0.4, 2.5, 5)
+
+[node name="ControlSidePanelWest" type="CSGBox3D" parent="." unique_id=1315364755]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 5.5, -50)
+material_override = SubResource("metal_dark")
+use_collision = true
+size = Vector3(0.4, 2.5, 5)
+
+[node name="ControlPanelScreen1" type="CSGBox3D" parent="." unique_id=429223832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.35, 6.2, -49)
+material_override = SubResource("screen_blue")
+size = Vector3(0.05, 1, 1.5)
+
+[node name="ControlPanelScreen2" type="CSGBox3D" parent="." unique_id=683832200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.35, 6.2, -51)
+material_override = SubResource("screen_blue")
+size = Vector3(0.05, 1, 1.5)
+
+[node name="EnemyBasic_Upper" parent="." unique_id=2114180681 instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -38)
+
+[node name="EnemyRanged_Control1" parent="." unique_id=1894989574 instance=ExtResource("6_enemy_ranged")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 5, -47)
+
+[node name="EnemyRanged_Control2" parent="." unique_id=381190208 instance=ExtResource("6_enemy_ranged")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 5, -50)
+
+[node name="Player" parent="." unique_id=1409086321 instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 14)
+
+[node name="Objective" parent="." unique_id=1501285816 instance=ExtResource("2_objective")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -52)
+
+[node name="HUD" parent="." unique_id=2071743625 instance=ExtResource("7_hud")]
+
+[node name="PauseMenu" parent="." unique_id=353845692 instance=ExtResource("8_pause")]
+
+[node name="GameOver" parent="." unique_id=2091266601 instance=ExtResource("9_gameover")]

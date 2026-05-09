@@ -33,11 +33,8 @@ func update_block_type(block_type: int):
 		block_label.text = "Bloque: %s [Q/E]" % block_names[block_type]
 
 func update_weapon(weapon_name: String):
-	print("[hud] update_weapon called with '", weapon_name, "' | weapon_label=", weapon_label)
 	if weapon_label:
 		weapon_label.text = "Arma: %s [1/2/3]" % weapon_name
-	else:
-		print("[hud] WARNING: weapon_label es null — el nodo $WeaponLabel no se resolvió")
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:

@@ -19,6 +19,7 @@ var block_types = ["Muro", "Rampa", "Plataforma"]
 var weapons: Array = []
 var current_weapon_index: int = 0
 var shoot_cooldown: float = 0.0
+var debug_shooting: bool = false  # poner true para logs por pellet
 
 # === REFERENCIAS ===
 @onready var camera = $Camera3D
@@ -45,6 +46,7 @@ func _ready():
 	print("  R = Reiniciar nivel")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
+	await get_tree().process_frame
 	update_hud()
 	if hud:
 		hud.show_message("Llega al objetivo verde", 3.0)
@@ -77,7 +79,6 @@ func _input(event):
 			build()
 	
 	if event is InputEventKey and event.pressed:
-		print("[player] _input key pressed: keycode=", event.keycode, " (KEY_1=", KEY_1, ", KEY_2=", KEY_2, ", KEY_3=", KEY_3, ", KEY_Q=", KEY_Q, ")")
 		if event.keycode == KEY_Q:
 			current_block_type = (current_block_type - 1) % block_types.size()
 			if current_block_type < 0:
@@ -96,9 +97,7 @@ func _input(event):
 			get_tree().reload_current_scene()
 
 func switch_weapon(idx: int):
-	print("[player] switch_weapon called with idx=", idx, " | weapons.size()=", weapons.size(), " | hud=", hud)
 	if idx < 0 or idx >= weapons.size():
-		print("[player] switch_weapon: idx fuera de rango, return")
 		return
 	current_weapon_index = idx
 	update_hud()
@@ -131,9 +130,15 @@ func shoot():
 		var query = PhysicsRayQueryParameters3D.create(origin, to_pos)
 		query.exclude = [self.get_rid()]
 		var result = space_state.intersect_ray(query)
+		if debug_shooting:
+			print("[shoot] arma=", w.weapon_name, " pellet=", _i,
+					" from=", origin, " to=", to_pos,
+					" hit=", result.get("collider", null))
 		if result:
 			var target = result.collider
 			if target and target.has_method("take_damage"):
+				if debug_shooting:
+					print("[shoot]   -> take_damage(", w.damage, ") en ", target.name)
 				target.take_damage(w.damage)
 
 func build():
