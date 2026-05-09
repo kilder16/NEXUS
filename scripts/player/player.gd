@@ -15,6 +15,11 @@ var build_distance = 5.0
 var current_block_type = 0
 var block_types = ["Muro", "Rampa", "Plataforma"]
 
+# === ARMAS ===
+var weapons: Array = []
+var current_weapon_index: int = 0
+var shoot_cooldown: float = 0.0
+
 # === REFERENCIAS ===
 @onready var camera = $Camera3D
 @onready var raycast = $Camera3D/RayCast3D
@@ -26,7 +31,8 @@ var block_scene = preload("res://scenes/building/block.tscn")
 
 func _ready():
 	add_to_group("player")
-	
+	setup_weapons()
+
 	print("=== NEXUS - PLAYER INICIADO ===")
 	print("Controles:")
 	print("  WASD / Flechas = Mover")
@@ -35,12 +41,20 @@ func _ready():
 	print("  Clic Izquierdo = Disparar / Destruir")
 	print("  Clic Derecho = Construir bloque")
 	print("  Q / E = Cambiar tipo de bloque")
+	print("  1 / 2 / 3 = Cambiar arma")
 	print("  R = Reiniciar nivel")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 	update_hud()
 	if hud:
 		hud.show_message("Llega al objetivo verde", 3.0)
+
+func setup_weapons():
+	weapons = [
+		Weapon.new("Pistola", 1, 0.2, 50.0),
+		Weapon.new("Escopeta", 3, 0.8, 10.0, 0.12, 6),
+		Weapon.new("Rifle", 2, 0.4, 100.0),
+	]
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -63,6 +77,7 @@ func _input(event):
 			build()
 	
 	if event is InputEventKey and event.pressed:
+		print("[player] _input key pressed: keycode=", event.keycode, " (KEY_1=", KEY_1, ", KEY_2=", KEY_2, ", KEY_3=", KEY_3, ", KEY_Q=", KEY_Q, ")")
 		if event.keycode == KEY_Q:
 			current_block_type = (current_block_type - 1) % block_types.size()
 			if current_block_type < 0:
@@ -71,15 +86,55 @@ func _input(event):
 		elif event.keycode == KEY_E:
 			current_block_type = (current_block_type + 1) % block_types.size()
 			update_hud()
+		elif event.keycode == KEY_1 or event.keycode == KEY_KP_1:
+			switch_weapon(0)
+		elif event.keycode == KEY_2 or event.keycode == KEY_KP_2:
+			switch_weapon(1)
+		elif event.keycode == KEY_3 or event.keycode == KEY_KP_3:
+			switch_weapon(2)
 		elif event.keycode == KEY_R:
 			get_tree().reload_current_scene()
 
+func switch_weapon(idx: int):
+	print("[player] switch_weapon called with idx=", idx, " | weapons.size()=", weapons.size(), " | hud=", hud)
+	if idx < 0 or idx >= weapons.size():
+		print("[player] switch_weapon: idx fuera de rango, return")
+		return
+	current_weapon_index = idx
+	update_hud()
+	if hud:
+		hud.show_message("Arma: " + weapons[idx].weapon_name, 1.0)
+
 func shoot():
-	if raycast.is_colliding():
-		var target = raycast.get_collider()
-		
-		if target.has_method("take_damage"):
-			target.take_damage()
+	if shoot_cooldown > 0.0:
+		return
+	if weapons.is_empty():
+		return
+
+	var w: Weapon = weapons[current_weapon_index]
+	shoot_cooldown = w.fire_rate
+
+	var space_state = get_world_3d().direct_space_state
+	var origin: Vector3 = camera.global_position
+	var base_forward: Vector3 = -camera.global_transform.basis.z
+	var cam_x: Vector3 = camera.global_transform.basis.x
+	var cam_y: Vector3 = camera.global_transform.basis.y
+
+	for _i in w.pellets:
+		var forward = base_forward
+		if w.spread > 0.0:
+			var sx = randf_range(-w.spread, w.spread)
+			var sy = randf_range(-w.spread, w.spread)
+			forward = forward.rotated(cam_x, sy).rotated(cam_y, sx).normalized()
+
+		var to_pos = origin + forward * w.max_range
+		var query = PhysicsRayQueryParameters3D.create(origin, to_pos)
+		query.exclude = [self.get_rid()]
+		var result = space_state.intersect_ray(query)
+		if result:
+			var target = result.collider
+			if target and target.has_method("take_damage"):
+				target.take_damage(w.damage)
 
 func build():
 	if raycast.is_colliding():
@@ -116,6 +171,8 @@ func update_hud():
 	if hud:
 		hud.update_health(health, max_health)
 		hud.update_block_type(current_block_type)
+		if not weapons.is_empty():
+			hud.update_weapon(weapons[current_weapon_index].weapon_name)
 
 func die():
 	print("=== HAS MUERTO ===")
@@ -124,6 +181,9 @@ func die():
 		game_over.show_game_over()
 
 func _physics_process(delta):
+	if shoot_cooldown > 0.0:
+		shoot_cooldown -= delta
+
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	

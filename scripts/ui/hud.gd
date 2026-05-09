@@ -6,6 +6,7 @@ extends CanvasLayer
 
 @onready var health_label = $HealthLabel
 @onready var block_label = $BlockLabel
+@onready var weapon_label = $WeaponLabel
 @onready var crosshair = $Crosshair
 @onready var message_label = $MessageLabel
 
@@ -30,6 +31,13 @@ func update_health(current_health: int, max_health: int):
 func update_block_type(block_type: int):
 	if block_label:
 		block_label.text = "Bloque: %s [Q/E]" % block_names[block_type]
+
+func update_weapon(weapon_name: String):
+	print("[hud] update_weapon called with '", weapon_name, "' | weapon_label=", weapon_label)
+	if weapon_label:
+		weapon_label.text = "Arma: %s [1/2/3]" % weapon_name
+	else:
+		print("[hud] WARNING: weapon_label es null — el nodo $WeaponLabel no se resolvió")
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:

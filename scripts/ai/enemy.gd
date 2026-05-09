@@ -147,9 +147,9 @@ func check_player_distance():
 		current_state = State.PATROL
 		print("Enemigo perdió al jugador")
 
-func take_damage():
-	health -= 1
-	print("Enemigo recibió daño. Vida: ", health)
+func take_damage(amount: int = 1):
+	health -= amount
+	print("Enemigo recibió daño (", amount, "). Vida: ", health)
 	
 	if health <= 0:
 		die()

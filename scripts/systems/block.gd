@@ -21,7 +21,7 @@ func apply_color():
 		material.albedo_color = block_colors[block_type]
 		mesh_instance.material_override = material
 
-func take_damage():
+func take_damage(_amount: int = 1):
 	print("¡BLOQUE DESTRUIDO!")
 	# Efecto visual antes de destruir (opcional)
 	queue_free()
