@@ -18,10 +18,8 @@ var block_types = ["Muro", "Rampa", "Plataforma"]
 # === REFERENCIAS ===
 @onready var camera = $Camera3D
 @onready var raycast = $Camera3D/RayCast3D
-@onready var health_label = $CanvasLayer/HealthLabel
-@onready var block_label = $CanvasLayer/BlockLabel
-@onready var enemy_label = $CanvasLayer/EnemyLabel
-@onready var hint_label = $CanvasLayer/HintLabel
+@onready var hud = get_tree().current_scene.get_node("HUD")
+@onready var game_over = get_tree().current_scene.get_node("GameOver")
 
 # Precargar la escena del bloque
 var block_scene = preload("res://scenes/building/block.tscn")
@@ -39,8 +37,10 @@ func _ready():
 	print("  Q / E = Cambiar tipo de bloque")
 	print("  R = Reiniciar nivel")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	
+
 	update_hud()
+	if hud:
+		hud.show_message("Llega al objetivo verde", 3.0)
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -80,9 +80,6 @@ func shoot():
 		
 		if target.has_method("take_damage"):
 			target.take_damage()
-			# Actualizar contador de enemigos después de un frame
-			await get_tree().process_frame
-			update_hud()
 
 func build():
 	if raycast.is_colliding():
@@ -108,51 +105,23 @@ func take_damage(amount: int):
 	health -= amount
 	print("¡DAÑO RECIBIDO! Vida: ", health, "/", max_health)
 	update_hud()
-	
-	# Efecto rojo en pantalla al recibir daño
-	flash_damage_screen()
-	
+
+	if hud:
+		hud.show_message("¡DAÑO!", 0.3)
+
 	if health <= 0:
 		die()
 
-func flash_damage_screen():
-	if hint_label:
-		hint_label.text = "¡DAÑO!"
-		hint_label.add_theme_color_override("font_color", Color(1, 0, 0))
-		await get_tree().create_timer(0.3).timeout
-		hint_label.text = "Llega al objetivo verde"
-		hint_label.add_theme_color_override("font_color", Color(1, 1, 1))
-
 func update_hud():
-	if health_label:
-		health_label.text = "♥ HP: " + str(health) + "/" + str(max_health)
-	
-	if block_label:
-		block_label.text = "🔨 Bloque: " + block_types[current_block_type]
-	
-	if enemy_label:
-		var enemies = get_tree().get_nodes_in_group("enemies")
-		# Si no hay grupo, contar por nombre
-		if enemies.size() == 0:
-			var count = 0
-			for node in get_tree().current_scene.get_children():
-				if node.name.begins_with("Enemy"):
-					count += 1
-			enemy_label.text = "👾 Enemigos: " + str(count)
-		else:
-			enemy_label.text = "👾 Enemigos: " + str(enemies.size())
-	
-	if hint_label:
-		hint_label.text = "Llega al objetivo verde"
+	if hud:
+		hud.update_health(health, max_health)
+		hud.update_block_type(current_block_type)
 
 func die():
 	print("=== HAS MUERTO ===")
-	if hint_label:
-		hint_label.text = "¡HAS MUERTO! Reiniciando..."
-		hint_label.add_theme_color_override("font_color", Color(1, 0, 0))
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	await get_tree().create_timer(2.0).timeout
-	get_tree().reload_current_scene()
+	if game_over:
+		game_over.show_game_over()
 
 func _physics_process(delta):
 	if not is_on_floor():
