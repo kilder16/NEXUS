@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://v0aevj5kyk2"]
+
+[ext_resource type="Script" uid="uid://bh1xvm1rogavm" path="res://scripts/ai/enemy_ranged.gd" id="2_1phqv"]
+[ext_resource type="PackedScene" uid="uid://btrl6yrmwyx8n" path="res://scenes/enemies/projectile.tscn" id="2_w85hd"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4gyqm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qi2p4"]
+albedo_color = Color(0.5019608, 0, 0.5019608, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_iifgy"]
+material = SubResource("StandardMaterial3D_qi2p4")
+
+[node name="Enemy" type="CharacterBody3D" unique_id=1718832985]
+script = ExtResource("2_1phqv")
+projectile_scene = ExtResource("2_w85hd")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=231983880]
+shape = SubResource("CapsuleShape3D_4gyqm")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1056953485]
+mesh = SubResource("CapsuleMesh_iifgy")
+script = ExtResource("2_1phqv")

@@ -8,6 +8,7 @@ var attack_damage = 1
 var attack_range = 2.0
 var detect_range = 10.0
 var attack_cooldown = 1.0
+var base_color = Color(0.8, 0.1, 0.1)
 
 # === PATRULLA ===
 var patrol_points: Array[Vector3] = []
@@ -164,7 +165,7 @@ func flash_damage():
 		mesh.material_override = material
 		# Restaurar color después de 0.1 segundos
 		await get_tree().create_timer(0.1).timeout
-		material.albedo_color = Color(0.8, 0.1, 0.1)  # Rojo
+		material.albedo_color = base_color
 		mesh.material_override = material
 
 func die():

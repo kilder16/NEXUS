@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://btrl6yrmwyx8n"]
+
+[ext_resource type="Script" uid="uid://cusey7w1dulu7" path="res://scripts/ai/projectile.gd" id="1_io4ym"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_a3hgl"]
+radius = 0.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_jb4xq"]
+radius = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0aa4j"]
+albedo_color = Color(1, 0.4, 0, 1)
+
+[node name="Projectile" type="Area3D" unique_id=1530671327]
+script = ExtResource("1_io4ym")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=187858578]
+shape = SubResource("SphereShape3D_a3hgl")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1477368835]
+mesh = SubResource("SphereMesh_jb4xq")
+surface_material_override/0 = SubResource("StandardMaterial3D_0aa4j")
