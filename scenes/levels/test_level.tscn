@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="5_cyt5c"]
 [ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="6_7x1jh"]
 [ext_resource type="PackedScene" uid="uid://bthvpxpuep2au" path="res://scenes/ui/game_over.tscn" id="7_hfwtw"]
+[ext_resource type="PackedScene" uid="uid://dbm04swh70bfi" path="res://scenes/enemies/enemy_fast.tscn" id="8_2mu0v"]
+[ext_resource type="PackedScene" uid="uid://v0aevj5kyk2" path="res://scenes/enemies/enemy_ranged.tscn" id="9_jmx14"]
+[ext_resource type="PackedScene" uid="uid://b4yd8ktdavv5d" path="res://scenes/enemies/enemy_tank.tscn" id="10_eaa0b"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3hp5k"]
 size = Vector3(20, 0.2, 20)
@@ -42,7 +45,7 @@ shape = SubResource("BoxShape3D_jbqir")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Target" unique_id=865435446]
 mesh = SubResource("BoxMesh_yautc")
 
-[node name="Enemy" parent="." unique_id=1718832985 instance=ExtResource("3_fr1um")]
+[node name="EnemyBasic" parent="." unique_id=1718832985 instance=ExtResource("3_fr1um")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
 
 [node name="Objective" parent="." unique_id=2046545273 instance=ExtResource("4_v45ci")]
@@ -59,3 +62,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -15)
 [node name="PauseMenu" parent="." unique_id=1552508195 instance=ExtResource("6_7x1jh")]
 
 [node name="GameOver" parent="." unique_id=1131923613 instance=ExtResource("7_hfwtw")]
+
+[node name="EnemyFast" parent="." unique_id=404553288 instance=ExtResource("8_2mu0v")]
+
+[node name="EnemyTank" parent="." unique_id=1606251170 instance=ExtResource("10_eaa0b")]
+
+[node name="EnemyRanged" parent="." unique_id=823211730 instance=ExtResource("9_jmx14")]
