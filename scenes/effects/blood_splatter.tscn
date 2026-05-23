@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://b8bloodsplatter5nx"]
+
+[ext_resource type="Script" path="res://scripts/effects/particle_auto_free.gd" id="1_autofree"]
+
+[sub_resource type="Gradient" id="grad_blood_inner"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.9, 0.15, 0.15, 1, 0.9, 0.15, 0.15, 0)
+
+[sub_resource type="GradientTexture1D" id="grad_blood"]
+gradient = SubResource("grad_blood_inner")
+
+[sub_resource type="ParticleProcessMaterial" id="proc_blood"]
+emission_shape = 1
+emission_sphere_radius = 0.15
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 2.5
+initial_velocity_max = 4.5
+gravity = Vector3(0, -5, 0)
+color = Color(0.9, 0.15, 0.15, 1)
+color_ramp = SubResource("grad_blood")
+scale_min = 0.12
+scale_max = 0.2
+
+[sub_resource type="StandardMaterial3D" id="blood_mat"]
+albedo_color = Color(0.9, 0.15, 0.15, 1)
+emission_enabled = true
+emission = Color(0.9, 0.15, 0.15, 1)
+emission_energy_multiplier = 2.0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="mesh_blood"]
+material = SubResource("blood_mat")
+radius = 0.08
+height = 0.16
+
+[node name="BloodSplatter" type="GPUParticles3D"]
+emitting = true
+amount = 16
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.85
+process_material = SubResource("proc_blood")
+draw_pass_1 = SubResource("mesh_blood")
+script = ExtResource("1_autofree")
+lifetime_seconds = 0.7

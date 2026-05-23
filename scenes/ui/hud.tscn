@@ -1,9 +1,24 @@
 [gd_scene format=3 uid="uid://dsgm4igmlmndq"]
 
 [ext_resource type="Script" uid="uid://crfg22ec1i2cd" path="res://scripts/ui/hud.gd" id="1_0mwgc"]
+[ext_resource type="Shader" path="res://shaders/damage_vignette.gdshader" id="2_vignette"]
+
+[sub_resource type="ShaderMaterial" id="vignette_mat"]
+shader = ExtResource("2_vignette")
+shader_parameter/intensity = 0.0
+shader_parameter/vignette_color = Color(1, 0, 0, 1)
 
 [node name="HUD" type="CanvasLayer" unique_id=1386771509]
 script = ExtResource("1_0mwgc")
+
+[node name="DamageVignette" type="ColorRect" parent="." groups=["damage_vignette"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("vignette_mat")
 
 [node name="HealthLabel" type="Label" parent="." unique_id=1147035055]
 offset_left = 20.0

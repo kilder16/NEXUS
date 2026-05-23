@@ -179,6 +179,7 @@ func die():
 	current_state = State.DEAD
 	died.emit(self)
 	AudioManager.play_sfx("enemy_death")
+	ParticleManager.spawn_enemy_death(global_position)
 	print("¡ENEMIGO ELIMINADO!")
 	# Animación simple de muerte
 	var tween = create_tween()

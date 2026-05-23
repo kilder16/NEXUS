@@ -115,6 +115,10 @@ func shoot():
 	var w: Weapon = weapons[current_weapon_index]
 	shoot_cooldown = w.fire_rate
 	AudioManager.play_sfx_pitched("shot")
+	ParticleManager.spawn_muzzle_flash(
+		camera.global_position - camera.global_transform.basis.z * 0.5,
+		-camera.global_transform.basis.z
+	)
 
 	var space_state = get_world_3d().direct_space_state
 	var origin: Vector3 = camera.global_position
@@ -143,6 +147,9 @@ func shoot():
 				if debug_shooting:
 					print("[shoot]   -> take_damage(", w.damage, ") en ", target.name)
 				target.take_damage(w.damage)
+				ParticleManager.spawn_blood(result.position)
+			else:
+				ParticleManager.spawn_impact(result.position, result.normal, "wall")
 
 func build():
 	if raycast.is_colliding():
@@ -166,6 +173,7 @@ func place_block(pos: Vector3):
 
 func take_damage(amount: int):
 	AudioManager.play_sfx("hit", 0.0, 0.9)
+	ParticleManager.show_damage_vignette()
 	health -= amount
 	print("¡DAÑO RECIBIDO! Vida: ", health, "/", max_health)
 	update_hud()

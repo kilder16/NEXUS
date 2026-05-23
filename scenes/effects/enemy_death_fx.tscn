@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://b8enemydeathfx5nx"]
+
+[ext_resource type="Script" path="res://scripts/effects/particle_auto_free.gd" id="1_autofree"]
+
+[sub_resource type="Gradient" id="grad_death_inner"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0, 0.866, 1, 1, 0, 0.866, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="grad_death"]
+gradient = SubResource("grad_death_inner")
+
+[sub_resource type="ParticleProcessMaterial" id="proc_death"]
+emission_shape = 1
+emission_sphere_radius = 0.3
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, -2, 0)
+color = Color(0, 0.866, 1, 1)
+color_ramp = SubResource("grad_death")
+scale_min = 0.1
+scale_max = 0.2
+
+[sub_resource type="BoxMesh" id="mesh_glitch"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="EnemyDeathFX" type="GPUParticles3D"]
+emitting = true
+amount = 20
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.7
+process_material = SubResource("proc_death")
+draw_pass_1 = SubResource("mesh_glitch")
+script = ExtResource("1_autofree")
+lifetime_seconds = 0.8
