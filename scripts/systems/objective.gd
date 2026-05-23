@@ -2,6 +2,8 @@ extends Area3D
 
 # Objetivo del nivel - el jugador debe llegar aquí para ganar
 
+@export var use_default_victory: bool = true
+
 var rotation_speed = 1.0
 
 func _ready():
@@ -14,6 +16,8 @@ func _process(delta):
 	rotate_y(rotation_speed * delta)
 
 func _on_body_entered(body):
+	if not use_default_victory:
+		return  # el nivel maneja la victoria
 	if body.is_in_group("player"):
 		print("=== ¡NIVEL COMPLETADO! ===")
 		# Mostrar mensaje de victoria

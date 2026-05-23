@@ -1,0 +1,173 @@
+[gd_scene format=3 uid="uid://b8winscreen5nx"]
+
+[ext_resource type="Script" path="res://scripts/ui/win_screen.gd" id="1_script"]
+
+[sub_resource type="Gradient" id="bg_gradient"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.02, 0.05, 0.12, 0.7, 0, 0, 0.02, 0.9)
+
+[sub_resource type="GradientTexture2D" id="bg_tex"]
+gradient = SubResource("bg_gradient")
+fill_to = Vector2(0, 1)
+width = 16
+height = 1024
+
+[sub_resource type="StyleBoxFlat" id="panel_style"]
+bg_color = Color(0.02, 0.05, 0.1, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.866, 1, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[sub_resource type="StyleBoxFlat" id="btn_normal"]
+bg_color = Color(0, 0.5, 0.7, 0.15)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.866, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+
+[sub_resource type="StyleBoxFlat" id="btn_hover"]
+bg_color = Color(0, 0.6, 0.9, 0.35)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+
+[sub_resource type="StyleBoxFlat" id="btn_pressed"]
+bg_color = Color(0, 0.3, 0.5, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.866, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+
+[node name="WinScreen" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = SubResource("bg_tex")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Panel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(620, 460)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -230.0
+offset_right = 310.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("panel_style")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.866, 1, 1)
+theme_override_font_sizes/font_size = 56
+text = "NÚCLEO DESCONECTADO"
+horizontal_alignment = 1
+
+[node name="NarrativeLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 24
+text = "Has neutralizado El Núcleo.
+Nexus se apaga."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Spacer1" type="Control" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="StatsContainer" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TimeLabel" type="Label" parent="Panel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "Tiempo: 00:00"
+horizontal_alignment = 1
+
+[node name="KillsLabel" type="Label" parent="Panel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "Enemigos: 0 / 0"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="RetryButton" type="Button" parent="Panel/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.7, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("btn_normal")
+theme_override_styles/hover = SubResource("btn_hover")
+theme_override_styles/pressed = SubResource("btn_pressed")
+text = "REINTENTAR"
+
+[node name="MenuButton" type="Button" parent="Panel/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.7, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("btn_normal")
+theme_override_styles/hover = SubResource("btn_hover")
+theme_override_styles/pressed = SubResource("btn_pressed")
+text = "MENÚ PRINCIPAL"
+
+[connection signal="pressed" from="Panel/VBoxContainer/ButtonsContainer/RetryButton" to="." method="_on_retry_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/ButtonsContainer/MenuButton" to="." method="_on_menu_button_pressed"]

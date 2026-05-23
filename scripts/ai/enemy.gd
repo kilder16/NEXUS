@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+signal died(enemy: Node)
+
 # === STATS ===
 var health = 3
 var speed = 2.5
@@ -148,6 +150,8 @@ func check_player_distance():
 		print("Enemigo perdió al jugador")
 
 func take_damage(amount: int = 1):
+	if current_state == State.DEAD:
+		return
 	health -= amount
 	print("Enemigo recibió daño (", amount, "). Vida: ", health)
 	
@@ -169,7 +173,10 @@ func flash_damage():
 		mesh.material_override = material
 
 func die():
+	if current_state == State.DEAD:
+		return
 	current_state = State.DEAD
+	died.emit(self)
 	print("¡ENEMIGO ELIMINADO!")
 	# Animación simple de muerte
 	var tween = create_tween()

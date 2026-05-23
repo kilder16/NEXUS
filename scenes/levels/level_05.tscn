@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="8_pause"]
 [ext_resource type="PackedScene" uid="uid://bthvpxpuep2au" path="res://scenes/ui/game_over.tscn" id="9_gameover"]
+[ext_resource type="Script" uid="uid://7g44lrhlgxme" path="res://scripts/levels/level_05.gd" id="10_level05_script"]
+[ext_resource type="PackedScene" uid="uid://b7kurd43r8arx" path="res://scenes/ui/win_screen.tscn" id="11_winscreen"]
 
 [sub_resource type="Environment" id="env_core"]
 background_mode = 1
@@ -26,10 +28,22 @@ albedo_color = Color(0.18, 0.2, 0.24, 1)
 metallic = 0.5
 roughness = 0.5
 
+[sub_resource type="StandardMaterial3D" id="server_blue_glow"]
+albedo_color = Color(0.1, 0.4, 1, 1)
+emission_enabled = true
+emission = Color(0.2, 0.5, 1, 1)
+emission_energy_multiplier = 2.5
+
 [sub_resource type="StandardMaterial3D" id="wall_tech"]
 albedo_color = Color(0.2, 0.22, 0.28, 1)
 metallic = 0.4
 roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="server_screen_cyan"]
+albedo_color = Color(0.1, 0.7, 0.9, 1)
+emission_enabled = true
+emission = Color(0.2, 0.8, 1, 1)
+emission_energy_multiplier = 1.8
 
 [sub_resource type="StandardMaterial3D" id="platform_tech"]
 albedo_color = Color(0.25, 0.28, 0.35, 1)
@@ -41,389 +55,381 @@ albedo_color = Color(0.08, 0.09, 0.12, 1)
 metallic = 0.9
 roughness = 0.3
 
-[sub_resource type="StandardMaterial3D" id="server_blue_glow"]
-albedo_color = Color(0.1, 0.4, 1, 1)
-emission_enabled = true
-emission = Color(0.2, 0.5, 1, 1)
-emission_energy_multiplier = 2.5
-
-[sub_resource type="StandardMaterial3D" id="server_screen_cyan"]
-albedo_color = Color(0.1, 0.7, 0.9, 1)
-emission_enabled = true
-emission = Color(0.2, 0.8, 1, 1)
-emission_energy_multiplier = 1.8
-
 [sub_resource type="StandardMaterial3D" id="emergency_red_mat"]
 albedo_color = Color(0.9, 0.15, 0.1, 1)
 emission_enabled = true
 emission = Color(1, 0.2, 0.1, 1)
 emission_energy_multiplier = 1.5
 
-[node name="Level05" type="Node3D"]
+[node name="Level05" type="Node3D" unique_id=896634950]
+script = ExtResource("10_level05_script")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1887778009]
 environment = SubResource("env_core")
 
-[node name="CornerLight_NE" type="OmniLight3D" parent="."]
+[node name="CornerLight_NE" type="OmniLight3D" parent="." unique_id=1816246900]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.8, -10)
 light_color = Color(0, 0.866, 1, 1)
 light_energy = 1.8
 omni_range = 8.0
 
-[node name="CornerLight_NW" type="OmniLight3D" parent="."]
+[node name="CornerLight_NW" type="OmniLight3D" parent="." unique_id=633001750]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3.8, -10)
 light_color = Color(0, 0.866, 1, 1)
 light_energy = 1.8
 omni_range = 8.0
 
-[node name="CornerLight_SE" type="OmniLight3D" parent="."]
+[node name="CornerLight_SE" type="OmniLight3D" parent="." unique_id=1719539451]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.8, 10)
 light_color = Color(0, 0.866, 1, 1)
 light_energy = 1.8
 omni_range = 8.0
 
-[node name="CornerLight_SW" type="OmniLight3D" parent="."]
+[node name="CornerLight_SW" type="OmniLight3D" parent="." unique_id=382109248]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3.8, 10)
 light_color = Color(0, 0.866, 1, 1)
 light_energy = 1.8
 omni_range = 8.0
 
-[node name="SpotLight_Boss" type="SpotLight3D" parent="."]
+[node name="SpotLight_Boss" type="SpotLight3D" parent="." unique_id=1333542857]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.8, -5)
-light_color = Color(1, 1, 1, 1)
 light_energy = 1.8
 spot_range = 8.0
 spot_angle = 40.0
 
-[node name="SpotLight_Center" type="SpotLight3D" parent="."]
+[node name="SpotLight_Center" type="SpotLight3D" parent="." unique_id=1848502979]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.8, 5)
-light_color = Color(1, 1, 1, 1)
 light_energy = 1.4
 spot_range = 8.0
 spot_angle = 40.0
 
-[node name="EmergencyLight1" type="OmniLight3D" parent="."]
+[node name="EmergencyLight1" type="OmniLight3D" parent="." unique_id=935004281]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, 10)
 light_color = Color(1, 0.2, 0.15, 1)
 light_energy = 2.0
 omni_range = 6.0
 
-[node name="EmergencyLight2" type="OmniLight3D" parent="."]
+[node name="EmergencyLight2" type="OmniLight3D" parent="." unique_id=636882828]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3, 10)
 light_color = Color(1, 0.2, 0.15, 1)
 light_energy = 2.0
 omni_range = 6.0
 
-[node name="EmergencyLight3" type="OmniLight3D" parent="."]
+[node name="EmergencyLight3" type="OmniLight3D" parent="." unique_id=1431226861]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, -10)
 light_color = Color(1, 0.2, 0.15, 1)
 light_energy = 2.0
 omni_range = 6.0
 
-[node name="EmergencyLight4" type="OmniLight3D" parent="."]
+[node name="EmergencyLight4" type="OmniLight3D" parent="." unique_id=2018915766]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3, -10)
 light_color = Color(1, 0.2, 0.15, 1)
 light_energy = 2.0
 omni_range = 6.0
 
-[node name="ObjectiveGuideLight" type="OmniLight3D" parent="."]
+[node name="ObjectiveGuideLight" type="OmniLight3D" parent="." unique_id=616922875]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -12)
 visible = false
 light_color = Color(0.3, 1, 0.4, 1)
 light_energy = 1.5
 omni_range = 6.0
 
-[node name="Floor" type="CSGBox3D" parent="."]
+[node name="Floor" type="CSGBox3D" parent="." unique_id=512825813]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = SubResource("floor_tech")
 use_collision = true
 size = Vector3(30, 1, 30)
 
-[node name="FloorLED_N" type="CSGBox3D" parent="."]
+[node name="FloorLED_N" type="CSGBox3D" parent="." unique_id=1280788360]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -5)
 material_override = SubResource("server_blue_glow")
 size = Vector3(16, 0.05, 0.2)
 
-[node name="FloorLED_S" type="CSGBox3D" parent="."]
+[node name="FloorLED_S" type="CSGBox3D" parent="." unique_id=785700930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 5)
 material_override = SubResource("server_blue_glow")
 size = Vector3(16, 0.05, 0.2)
 
-[node name="FloorLED_E" type="CSGBox3D" parent="."]
+[node name="FloorLED_E" type="CSGBox3D" parent="." unique_id=1135390266]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.02, 0)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 16)
 
-[node name="FloorLED_W" type="CSGBox3D" parent="."]
+[node name="FloorLED_W" type="CSGBox3D" parent="." unique_id=2101298279]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.02, 0)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 16)
 
-[node name="SouthWall" type="CSGBox3D" parent="."]
+[node name="SouthWall" type="CSGBox3D" parent="." unique_id=1810920878]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 15)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="NorthWall" type="CSGBox3D" parent="."]
+[node name="NorthWall" type="CSGBox3D" parent="." unique_id=11937445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -15)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="EastWall" type="CSGBox3D" parent="."]
+[node name="EastWall" type="CSGBox3D" parent="." unique_id=1520659440]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2, 0)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(0.5, 4, 12.43)
 
-[node name="WestWall" type="CSGBox3D" parent="."]
+[node name="WestWall" type="CSGBox3D" parent="." unique_id=2080045308]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 2, 0)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(0.5, 4, 12.43)
 
-[node name="ChamferSE" type="CSGBox3D" parent="."]
+[node name="ChamferSE" type="CSGBox3D" parent="." unique_id=868177266]
 transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 10.605, 2, 10.605)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="ChamferNE" type="CSGBox3D" parent="."]
+[node name="ChamferNE" type="CSGBox3D" parent="." unique_id=387950985]
 transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 10.605, 2, -10.605)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="ChamferNW" type="CSGBox3D" parent="."]
+[node name="ChamferNW" type="CSGBox3D" parent="." unique_id=523915476]
 transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, -10.605, 2, -10.605)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="ChamferSW" type="CSGBox3D" parent="."]
+[node name="ChamferSW" type="CSGBox3D" parent="." unique_id=1057029559]
 transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, -10.605, 2, 10.605)
 material_override = SubResource("wall_tech")
 use_collision = true
 size = Vector3(12.43, 4, 0.5)
 
-[node name="ScreenWall_N" type="CSGBox3D" parent="."]
+[node name="ScreenWall_N" type="CSGBox3D" parent="." unique_id=2053583685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -14.75)
 material_override = SubResource("server_screen_cyan")
 size = Vector3(3, 1.5, 0.05)
 
-[node name="ScreenWall_S" type="CSGBox3D" parent="."]
+[node name="ScreenWall_S" type="CSGBox3D" parent="." unique_id=182847346]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 14.75)
 material_override = SubResource("server_screen_cyan")
 size = Vector3(3, 1.5, 0.05)
 
-[node name="ScreenWall_E" type="CSGBox3D" parent="."]
+[node name="ScreenWall_E" type="CSGBox3D" parent="." unique_id=1888624891]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 2.5, 0)
 material_override = SubResource("server_screen_cyan")
 size = Vector3(0.05, 1.5, 3)
 
-[node name="ScreenWall_W" type="CSGBox3D" parent="."]
+[node name="ScreenWall_W" type="CSGBox3D" parent="." unique_id=1649346605]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.75, 2.5, 0)
 material_override = SubResource("server_screen_cyan")
 size = Vector3(0.05, 1.5, 3)
 
-[node name="TechPlatform_East" type="CSGBox3D" parent="."]
+[node name="TechPlatform_East" type="CSGBox3D" parent="." unique_id=1846389549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.25, 0)
 material_override = SubResource("platform_tech")
 use_collision = true
 size = Vector3(4, 2.5, 4)
 
-[node name="TechPlatform_West" type="CSGBox3D" parent="."]
+[node name="TechPlatform_West" type="CSGBox3D" parent="." unique_id=1322755633]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.25, 0)
 material_override = SubResource("platform_tech")
 use_collision = true
 size = Vector3(4, 2.5, 4)
 
-[node name="Ramp_East" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, 10, 1.25, 4)
+[node name="Ramp_East" type="CSGBox3D" parent="." unique_id=1055585395]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, 10, 1.25, 4)
 material_override = SubResource("platform_tech")
 use_collision = true
 size = Vector3(2, 0.3, 4.72)
 
-[node name="Ramp_West" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, -10, 1.25, 4)
+[node name="Ramp_West" type="CSGBox3D" parent="." unique_id=271797130]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, -10, 1.25, 4)
 material_override = SubResource("platform_tech")
 use_collision = true
 size = Vector3(2, 0.3, 4.72)
 
-[node name="LEDRampEdge_E1" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, 11.05, 1.42, 4.11)
+[node name="LEDRampEdge_E1" type="CSGBox3D" parent="." unique_id=1435778696]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, 11.05, 1.42, 4.11)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.1, 0.05, 4.72)
 
-[node name="LEDRampEdge_E2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, 8.95, 1.42, 4.11)
+[node name="LEDRampEdge_E2" type="CSGBox3D" parent="." unique_id=245643575]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, 8.95, 1.42, 4.11)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.1, 0.05, 4.72)
 
-[node name="LEDRampEdge_W1" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, -8.95, 1.42, 4.11)
+[node name="LEDRampEdge_W1" type="CSGBox3D" parent="." unique_id=1403937993]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, -8.95, 1.42, 4.11)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.1, 0.05, 4.72)
 
-[node name="LEDRampEdge_W2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.848, -0.530, 0, 0.530, 0.848, -11.05, 1.42, 4.11)
+[node name="LEDRampEdge_W2" type="CSGBox3D" parent="." unique_id=377317610]
+transform = Transform3D(1, 0, 0, 0, 0.848, -0.53, 0, 0.53, 0.848, -11.05, 1.42, 4.11)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.1, 0.05, 4.72)
 
-[node name="ServerRack1" type="CSGBox3D" parent="."]
+[node name="ServerRack1" type="CSGBox3D" parent="." unique_id=2131667532]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.4, 6)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack2" type="CSGBox3D" parent="."]
+[node name="ServerRack2" type="CSGBox3D" parent="." unique_id=671059429]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.4, -6)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack3" type="CSGBox3D" parent="."]
+[node name="ServerRack3" type="CSGBox3D" parent="." unique_id=925464923]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.4, 6)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack4" type="CSGBox3D" parent="."]
+[node name="ServerRack4" type="CSGBox3D" parent="." unique_id=286380242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.4, -6)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack5" type="CSGBox3D" parent="."]
+[node name="ServerRack5" type="CSGBox3D" parent="." unique_id=2048624234]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.4, -12)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack6" type="CSGBox3D" parent="."]
+[node name="ServerRack6" type="CSGBox3D" parent="." unique_id=1227007249]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.4, -12)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack7" type="CSGBox3D" parent="."]
+[node name="ServerRack7" type="CSGBox3D" parent="." unique_id=1315820317]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.4, 8)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="ServerRack8" type="CSGBox3D" parent="."]
+[node name="ServerRack8" type="CSGBox3D" parent="." unique_id=570186373]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.4, 8)
 material_override = SubResource("server_metal")
 use_collision = true
 size = Vector3(1.2, 2.8, 0.8)
 
-[node name="RackLED1" type="CSGBox3D" parent="."]
+[node name="RackLED1" type="CSGBox3D" parent="." unique_id=1201797608]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.85, 6)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED2" type="CSGBox3D" parent="."]
+[node name="RackLED2" type="CSGBox3D" parent="." unique_id=242021282]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.85, -6)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED3" type="CSGBox3D" parent="."]
+[node name="RackLED3" type="CSGBox3D" parent="." unique_id=1379062356]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.85, 6)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED4" type="CSGBox3D" parent="."]
+[node name="RackLED4" type="CSGBox3D" parent="." unique_id=1848220137]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.85, -6)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED5" type="CSGBox3D" parent="."]
+[node name="RackLED5" type="CSGBox3D" parent="." unique_id=815052604]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.85, -12)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED6" type="CSGBox3D" parent="."]
+[node name="RackLED6" type="CSGBox3D" parent="." unique_id=1660120453]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.85, -12)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED7" type="CSGBox3D" parent="."]
+[node name="RackLED7" type="CSGBox3D" parent="." unique_id=749977816]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.85, 8)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="RackLED8" type="CSGBox3D" parent="."]
+[node name="RackLED8" type="CSGBox3D" parent="." unique_id=993004190]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.85, 8)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 0.2)
 
-[node name="LEDStrip_Ceiling1" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling1" type="CSGBox3D" parent="." unique_id=498596905]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, -10)
 material_override = SubResource("server_blue_glow")
 size = Vector3(8, 0.05, 0.2)
 
-[node name="LEDStrip_Ceiling2" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling2" type="CSGBox3D" parent="." unique_id=1807300796]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, 0)
 material_override = SubResource("server_blue_glow")
 size = Vector3(8, 0.05, 0.2)
 
-[node name="LEDStrip_Ceiling3" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling3" type="CSGBox3D" parent="." unique_id=1166347520]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, 10)
 material_override = SubResource("server_blue_glow")
 size = Vector3(8, 0.05, 0.2)
 
-[node name="LEDStrip_Ceiling4" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling4" type="CSGBox3D" parent="." unique_id=1595111551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3.8, 0)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 8)
 
-[node name="LEDStrip_Ceiling5" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling5" type="CSGBox3D" parent="." unique_id=1303996548]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.8, 0)
 material_override = SubResource("server_blue_glow")
 size = Vector3(0.2, 0.05, 8)
 
-[node name="LEDStrip_Ceiling6" type="CSGBox3D" parent="."]
+[node name="LEDStrip_Ceiling6" type="CSGBox3D" parent="." unique_id=1702793284]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7, -5)
 material_override = SubResource("emergency_red_mat")
 size = Vector3(0.2, 0.05, 4)
 
-[node name="BossFinal" parent="." instance=ExtResource("5_enemy_tank")]
+[node name="BossFinal" parent="." unique_id=576320581 instance=ExtResource("5_enemy_tank")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 3, -5)
 
-[node name="EnemyFast1" parent="." instance=ExtResource("4_enemy_fast")]
+[node name="EnemyFast1" parent="." unique_id=1184579355 instance=ExtResource("4_enemy_fast")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, 10)
 
-[node name="EnemyFast2" parent="." instance=ExtResource("4_enemy_fast")]
+[node name="EnemyFast2" parent="." unique_id=1865768375 instance=ExtResource("4_enemy_fast")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, 10)
 
-[node name="EnemyFast3" parent="." instance=ExtResource("4_enemy_fast")]
+[node name="EnemyFast3" parent="." unique_id=1407561147 instance=ExtResource("4_enemy_fast")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -10)
 
-[node name="EnemyFast4" parent="." instance=ExtResource("4_enemy_fast")]
+[node name="EnemyFast4" parent="." unique_id=1757690449 instance=ExtResource("4_enemy_fast")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -10)
 
-[node name="EnemyRanged1_PlatE" parent="." instance=ExtResource("6_enemy_ranged")]
+[node name="EnemyRanged1_PlatE" parent="." unique_id=1426131179 instance=ExtResource("6_enemy_ranged")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, 0)
 
-[node name="EnemyRanged2_PlatW" parent="." instance=ExtResource("6_enemy_ranged")]
+[node name="EnemyRanged2_PlatW" parent="." unique_id=162355253 instance=ExtResource("6_enemy_ranged")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3.5, 0)
 
-[node name="EnemyOffice1" parent="." instance=ExtResource("3_enemy")]
+[node name="EnemyOffice1" parent="." unique_id=1029095989 instance=ExtResource("3_enemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 4)
 
-[node name="EnemyOffice2" parent="." instance=ExtResource("3_enemy")]
+[node name="EnemyOffice2" parent="." unique_id=1814053665 instance=ExtResource("3_enemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -8)
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=1703853053 instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 14)
 
-[node name="Objective" parent="." instance=ExtResource("2_objective")]
+[node name="Objective" parent="." unique_id=1793327977 instance=ExtResource("2_objective")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
+use_default_victory = false
 
-[node name="HUD" parent="." instance=ExtResource("7_hud")]
+[node name="HUD" parent="." unique_id=2110825384 instance=ExtResource("7_hud")]
 
-[node name="PauseMenu" parent="." instance=ExtResource("8_pause")]
+[node name="PauseMenu" parent="." unique_id=793353683 instance=ExtResource("8_pause")]
 
-[node name="GameOver" parent="." instance=ExtResource("9_gameover")]
+[node name="GameOver" parent="." unique_id=1649943997 instance=ExtResource("9_gameover")]
+
+[node name="WinScreen" parent="." unique_id=706409519 instance=ExtResource("11_winscreen")]
+grow_horizontal = 2
+grow_vertical = 2
