@@ -19,6 +19,9 @@ func show_final_victory(seconds: float, kills: int, total: int) -> void:
 	if kills_label:
 		kills_label.text = "Enemigos: %d / %d" % [kills, total]
 
+	AudioManager.stop_music(2.0)
+	AudioManager.play_sfx("victory")
+
 	visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().paused = true

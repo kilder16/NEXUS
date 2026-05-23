@@ -152,6 +152,7 @@ func check_player_distance():
 func take_damage(amount: int = 1):
 	if current_state == State.DEAD:
 		return
+	AudioManager.play_sfx_pitched("hit")
 	health -= amount
 	print("Enemigo recibió daño (", amount, "). Vida: ", health)
 	
@@ -177,6 +178,7 @@ func die():
 		return
 	current_state = State.DEAD
 	died.emit(self)
+	AudioManager.play_sfx("enemy_death")
 	print("¡ENEMIGO ELIMINADO!")
 	# Animación simple de muerte
 	var tween = create_tween()

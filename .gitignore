@@ -1,3 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Audio placeholders generados procedurally en primer launch
+/audio/sfx/*.wav
+/audio/sfx/*.wav.import
+/audio/music/*.wav
+/audio/music/*.wav.import

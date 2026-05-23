@@ -95,6 +95,8 @@ func _input(event):
 			switch_weapon(2)
 		elif event.keycode == KEY_R:
 			get_tree().reload_current_scene()
+		elif event.keycode == KEY_H and debug_shooting:
+			take_damage(1)
 
 func switch_weapon(idx: int):
 	if idx < 0 or idx >= weapons.size():
@@ -112,6 +114,7 @@ func shoot():
 
 	var w: Weapon = weapons[current_weapon_index]
 	shoot_cooldown = w.fire_rate
+	AudioManager.play_sfx_pitched("shot")
 
 	var space_state = get_world_3d().direct_space_state
 	var origin: Vector3 = camera.global_position
@@ -162,6 +165,7 @@ func place_block(pos: Vector3):
 	get_tree().current_scene.add_child(block)
 
 func take_damage(amount: int):
+	AudioManager.play_sfx("hit", 0.0, 0.9)
 	health -= amount
 	print("¡DAÑO RECIBIDO! Vida: ", health, "/", max_health)
 	update_hud()
@@ -180,6 +184,7 @@ func update_hud():
 			hud.update_weapon(weapons[current_weapon_index].weapon_name)
 
 func die():
+	AudioManager.play_sfx("enemy_death", 0.0, 0.8)
 	print("=== HAS MUERTO ===")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if game_over:
