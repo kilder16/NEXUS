@@ -13,9 +13,17 @@ extends CanvasLayer
 var block_names = ["Muro", "Rampa", "Plataforma"]
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# Ocultar mensaje inicial
 	if message_label:
 		message_label.visible = false
+
+func _process(_delta: float) -> void:
+	# Ocultar crosshair cuando el mouse no está capturado (pause, winscreen,
+	# gameover, settings). Una sola regla universal evita tocar cada caller
+	# de Input.set_mouse_mode.
+	if crosshair:
+		crosshair.visible = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 
 func update_health(current_health: int, max_health: int):
 	if health_label:
