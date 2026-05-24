@@ -6,6 +6,7 @@ extends Control
 @onready var subtitle_label: Label = $VBoxContainer/SubtitleLabel
 @onready var play_button: Button = $VBoxContainer/PlayButton
 @onready var level_select_button: Button = $VBoxContainer/LevelSelectButton
+@onready var configuracion_button: Button = $VBoxContainer/ConfiguracionButton
 @onready var quit_button: Button = $VBoxContainer/QuitButton
 @onready var version_label: Label = $VersionLabel
 @onready var level_select_panel: Control = $LevelSelectPanel
@@ -15,6 +16,8 @@ extends Control
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().paused = false
+	# Limpiar cualquier return path stale (ej. pause anterior que nunca abrió settings)
+	SettingsManager.pending_return_path = ""
 	AudioManager.play_music("menu_music", 2.0)
 
 	# Background FX posicionado al bottom-center del viewport
@@ -29,13 +32,15 @@ func _ready() -> void:
 	subtitle_label.modulate.a = 0.0
 	play_button.modulate.a = 0.0
 	level_select_button.modulate.a = 0.0
+	configuracion_button.modulate.a = 0.0
 	quit_button.modulate.a = 0.0
 	version_label.modulate.a = 0.0
 	play_button.scale = Vector2(0.92, 0.92)
 	level_select_button.scale = Vector2(0.92, 0.92)
+	configuracion_button.scale = Vector2(0.92, 0.92)
 	quit_button.scale = Vector2(0.92, 0.92)
 
-	var buttons: Array[Button] = [play_button, level_select_button, quit_button]
+	var buttons: Array[Button] = [play_button, level_select_button, configuracion_button, quit_button]
 	for btn in buttons:
 		btn.mouse_entered.connect(_on_button_hover_in.bind(btn))
 		btn.mouse_exited.connect(_on_button_hover_out.bind(btn))
@@ -89,6 +94,10 @@ func _on_play_button_pressed() -> void:
 
 func _on_level_select_button_pressed() -> void:
 	level_select_panel.visible = true
+
+func _on_configuracion_button_pressed() -> void:
+	AudioManager.stop_music(0.5)
+	get_tree().change_scene_to_file("res://scenes/ui/settings_menu.tscn")
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()

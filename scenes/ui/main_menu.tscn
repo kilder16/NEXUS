@@ -88,6 +88,11 @@ custom_minimum_size = Vector2(260, 54)
 layout_mode = 2
 text = "SELECCIONAR NIVEL"
 
+[node name="ConfiguracionButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(260, 54)
+layout_mode = 2
+text = "CONFIGURACIÓN"
+
 [node name="QuitButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(260, 54)
 layout_mode = 2
@@ -116,4 +121,5 @@ visible = false
 
 [connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/LevelSelectButton" to="." method="_on_level_select_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ConfiguracionButton" to="." method="_on_configuracion_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

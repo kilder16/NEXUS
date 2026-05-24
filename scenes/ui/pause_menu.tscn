@@ -47,10 +47,16 @@ custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "CONTINUAR"
 
+[node name="SettingsButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "CONFIGURACIÓN"
+
 [node name="MenuButton" type="Button" parent="VBoxContainer" unique_id=2115162059]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "MENÚ PRINCIPAL"
 
 [connection signal="pressed" from="VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]

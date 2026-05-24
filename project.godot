@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 AudioManager="*res://scripts/systems/audio_manager.gd"
 ParticleManager="*res://scripts/systems/particle_manager.gd"
+SettingsManager="*res://scripts/systems/settings_manager.gd"
 
 [physics]
 
