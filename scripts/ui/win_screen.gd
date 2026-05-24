@@ -3,6 +3,7 @@ extends Control
 # === NEXUS - Pantalla de victoria final (level_05) ===
 
 @onready var title_label: Label = $Panel/VBoxContainer/TitleLabel
+@onready var narrative_label: Label = $Panel/VBoxContainer/NarrativeLabel
 @onready var time_label: Label = $Panel/VBoxContainer/StatsContainer/TimeLabel
 @onready var kills_label: Label = $Panel/VBoxContainer/StatsContainer/KillsLabel
 
@@ -11,7 +12,13 @@ func _ready() -> void:
 	modulate.a = 0.0
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
-func show_final_victory(seconds: float, kills: int, total: int) -> void:
+func show_final_victory(seconds: float, kills: int, total: int, title: String = "", narrative: String = "") -> void:
+	# Override de strings por-nivel; "" mantiene el texto default del .tscn (L05).
+	if title != "" and title_label:
+		title_label.text = title
+	if narrative != "" and narrative_label:
+		narrative_label.text = narrative
+
 	var mins: int = int(seconds) / 60
 	var secs: int = int(seconds) % 60
 	if time_label:

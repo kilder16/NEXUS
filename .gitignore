@@ -7,3 +7,6 @@
 /audio/sfx/*.wav.import
 /audio/music/*.wav
 /audio/music/*.wav.import
+
+# Claude Code metadata local (settings, memoria, etc.)
+.claude/

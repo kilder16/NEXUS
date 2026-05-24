@@ -9,40 +9,77 @@
 [ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="8_pause"]
 [ext_resource type="PackedScene" uid="uid://bthvpxpuep2au" path="res://scenes/ui/game_over.tscn" id="9_gameover"]
+[ext_resource type="Script" path="res://scripts/levels/level_01.gd" id="10_script"]
+[ext_resource type="PackedScene" uid="uid://b7kurd43r8arx" path="res://scenes/ui/win_screen.tscn" id="11_winscreen"]
 
 [sub_resource type="StandardMaterial3D" id="floor_mat"]
-albedo_color = Color(0.28, 0.28, 0.32, 1)
+albedo_color = Color(0.22, 0.23, 0.27, 1)
+metallic = 0.3
+roughness = 0.7
 
 [sub_resource type="StandardMaterial3D" id="wall_mat"]
-albedo_color = Color(0.62, 0.5, 0.4, 1)
+albedo_color = Color(0.5, 0.42, 0.36, 1)
+metallic = 0.2
+roughness = 0.75
 
 [sub_resource type="StandardMaterial3D" id="cover_mat"]
-albedo_color = Color(0.55, 0.5, 0.42, 1)
+albedo_color = Color(0.45, 0.42, 0.36, 1)
+metallic = 0.15
+roughness = 0.85
 
 [sub_resource type="StandardMaterial3D" id="pillar_mat"]
-albedo_color = Color(0.5, 0.5, 0.55, 1)
+albedo_color = Color(0.4, 0.42, 0.48, 1)
+metallic = 0.5
+roughness = 0.55
 
 [sub_resource type="StandardMaterial3D" id="stair_mat"]
-albedo_color = Color(0.65, 0.65, 0.65, 1)
+albedo_color = Color(0.5, 0.52, 0.56, 1)
+metallic = 0.4
+roughness = 0.6
 
 [sub_resource type="StandardMaterial3D" id="platform_mat"]
-albedo_color = Color(0.4, 0.42, 0.5, 1)
+albedo_color = Color(0.32, 0.34, 0.42, 1)
+metallic = 0.45
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="led_cyan_mat"]
+albedo_color = Color(0.1, 0.6, 0.95, 1)
+emission_enabled = true
+emission = Color(0.2, 0.8, 1, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="StandardMaterial3D" id="server_decor_mat"]
+albedo_color = Color(0.1, 0.11, 0.14, 1)
+metallic = 0.85
+roughness = 0.35
 
 [sub_resource type="Environment" id="env_default"]
 background_mode = 1
-background_color = Color(0.45, 0.55, 0.7, 1)
+background_color = Color(0.05, 0.07, 0.11, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.7, 0.75, 0.85, 1)
-ambient_light_energy = 0.4
+ambient_light_color = Color(0.55, 0.65, 0.8, 1)
+ambient_light_energy = 0.28
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.15
 
 [node name="Level01" type="Node3D"]
+script = ExtResource("10_script")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("env_default")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.7071068, -0.7071068, 0, 0.7071068, 0.7071068, 0, 12, 0)
+transform = Transform3D(0.866, 0, 0.5, 0.354, 0.7071, -0.612, -0.354, 0.7071, 0.612, 0, 12, 0)
+light_color = Color(0.95, 0.92, 0.88, 1)
+light_energy = 0.75
 shadow_enabled = true
+
+[node name="BackFillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866, 0, 8, 0)
+light_color = Color(0.95, 0.78, 0.6, 1)
+light_energy = 0.25
 
 [node name="Floor" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -22)
@@ -80,8 +117,14 @@ use_collision = true
 size = Vector3(3, 2, 1)
 material_override = SubResource("cover_mat")
 
+[node name="CoverPostSpawn" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, -3)
+use_collision = true
+size = Vector3(3, 2, 1)
+material_override = SubResource("cover_mat")
+
 [node name="EnemyFast" parent="." instance=ExtResource("4_enemy_fast")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, -18)
 
 [node name="Zone2PillarEast" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, -20)
@@ -106,6 +149,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -27)
 
 [node name="Enemy" parent="." instance=ExtResource("3_enemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -22)
+
+[node name="Zone2CoverTransversal" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -19)
+use_collision = true
+size = Vector3(1, 2, 3)
+material_override = SubResource("cover_mat")
+
+[node name="Zone2EnemyBase2" parent="." instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -23)
 
 [node name="Stair1" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -36)
@@ -137,17 +189,114 @@ use_collision = true
 size = Vector3(5, 2, 0.5)
 material_override = SubResource("cover_mat")
 
+[node name="PlatformCoverForRanged" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4.5, -48)
+use_collision = true
+size = Vector3(1.5, 1.5, 0.5)
+material_override = SubResource("cover_mat")
+
 [node name="EnemyRanged" parent="." instance=ExtResource("6_enemy_ranged")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4, -50)
+
+[node name="PlatformEscort" parent="." instance=ExtResource("3_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 4, -48)
+
+[node name="SpawnOmni" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 5)
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 1.2
+omni_range = 7.0
+
+[node name="CorridorOmni_E1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.5, -8)
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 1.5
+omni_range = 9.0
+
+[node name="CorridorOmni_W1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3.5, -18)
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 1.5
+omni_range = 9.0
+
+[node name="Zone2Omni" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3.5, -28)
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 1.5
+omni_range = 9.0
+
+[node name="PlatformOmni" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -47)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 1.8
+omni_range = 11.0
+
+[node name="ObjectiveSpot" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 7.5, -51)
+light_color = Color(0.7, 1, 0.75, 1)
+light_energy = 2.6
+spot_range = 7.0
+spot_angle = 34.0
+
+[node name="LEDCeiling_Z1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -8)
+use_collision = false
+size = Vector3(8, 0.05, 0.2)
+material_override = SubResource("led_cyan_mat")
+
+[node name="LEDCeiling_Z2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -22)
+use_collision = false
+size = Vector3(8, 0.05, 0.2)
+material_override = SubResource("led_cyan_mat")
+
+[node name="LEDCeiling_Plat" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, -47)
+use_collision = false
+size = Vector3(10, 0.05, 0.2)
+material_override = SubResource("led_cyan_mat")
+
+[node name="ServerDecor_E" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1.4, -10)
+use_collision = true
+size = Vector3(1.2, 2.8, 0.8)
+material_override = SubResource("server_decor_mat")
+
+[node name="ServerDecor_W" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 1.4, -30)
+use_collision = true
+size = Vector3(1.2, 2.8, 0.8)
+material_override = SubResource("server_decor_mat")
+
+[node name="ServerDecorLED_E" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.85, -10)
+use_collision = false
+size = Vector3(0.2, 0.05, 0.2)
+material_override = SubResource("led_cyan_mat")
+
+[node name="ServerDecorLED_W" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 2.85, -30)
+use_collision = false
+size = Vector3(0.2, 0.05, 0.2)
+material_override = SubResource("led_cyan_mat")
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
+[node name="ObjectiveGuideLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -51)
+light_color = Color(0.3, 1, 0.4, 1)
+light_energy = 1.5
+omni_range = 6.0
+
 [node name="Objective" parent="." instance=ExtResource("2_objective")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -51)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -51)
+use_default_victory = false
 
 [node name="HUD" parent="." instance=ExtResource("7_hud")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("8_pause")]
 
 [node name="GameOver" parent="." instance=ExtResource("9_gameover")]
+
+[node name="WinScreen" parent="." instance=ExtResource("11_winscreen")]
