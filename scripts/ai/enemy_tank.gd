@@ -5,7 +5,7 @@ extends "res://scripts/ai/enemy.gd"
 
 func _ready():
 	super._ready()
-	health = 10
+	health = 8
 	speed = 1.25
 	chase_speed = 2.0
 	attack_damage = 1

@@ -66,6 +66,8 @@ func _setup_streams() -> void:
 	_sfx_streams["hit"] = _ensure_stream(SFX_DIR + "hit.wav", _gen_hit)
 	_sfx_streams["enemy_death"] = _ensure_stream(SFX_DIR + "enemy_death.wav", _gen_enemy_death)
 	_sfx_streams["victory"] = _ensure_stream(SFX_DIR + "victory.wav", _gen_victory)
+	_sfx_streams["ui_hover"] = _ensure_stream(SFX_DIR + "ui_hover.wav", _gen_ui_hover)
+	_sfx_streams["ui_click"] = _ensure_stream(SFX_DIR + "ui_click.wav", _gen_ui_click)
 	_music_streams["menu_music"] = _ensure_stream(MUSIC_DIR + "menu_music.wav", _gen_menu_music, true)
 
 func _ensure_stream(path: String, generator: Callable, is_music: bool = false) -> AudioStreamWAV:
@@ -252,6 +254,35 @@ func _gen_victory() -> AudioStreamWAV:
 		if t > 0.6:
 			s += sin(TAU * 880.0 * (t - 0.6)) * _env_ad(t - 0.6, 0.020, 1.500) * 0.30
 		_write_sample(data, i, s * 0.75)
+	return _build_stream(data, sr)
+
+func _gen_ui_hover() -> AudioStreamWAV:
+	# Tick suave para hover sobre botones. 30ms, tono limpio.
+	var sr := 44100
+	var dur := 0.03
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		var s: float = sin(TAU * 1800.0 * t) * _env_ad(t, 0.001, 0.012) * 0.5
+		_write_sample(data, i, s)
+	return _build_stream(data, sr)
+
+func _gen_ui_click() -> AudioStreamWAV:
+	# Click más sustancial para confirmación. 60ms, noise + tonal mid.
+	var sr := 44100
+	var dur := 0.06
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		var noise: float = _rng.randf_range(-1.0, 1.0)
+		var env_n: float = _env_ad(t, 0.001, 0.020)
+		var tonal: float = sin(TAU * 1200.0 * t) * _env_ad(t, 0.001, 0.035)
+		var s: float = (noise * 0.3 + tonal * 0.5) * env_n
+		_write_sample(data, i, s * 0.8)
 	return _build_stream(data, sr)
 
 func _gen_menu_music() -> AudioStreamWAV:

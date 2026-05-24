@@ -8,7 +8,7 @@ var preferred_distance = 8.0
 
 func _ready():
 	super._ready()
-	health = 5
+	health = 4
 	attack_range = 12.0
 	detect_range = 15.0
 	attack_cooldown = 1.5
