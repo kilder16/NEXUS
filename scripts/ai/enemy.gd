@@ -4,6 +4,8 @@ signal died(enemy: Node)
 
 # === STATS ===
 var health = 3
+var max_health = 3  # subclases lo overridan tras super._ready()
+var display_name = "Centinela"  # nombre mostrado en el HUD; subclases lo overridan
 var speed = 2.5
 var chase_speed = 4.0
 var attack_damage = 1
@@ -29,6 +31,8 @@ var attack_timer = 0.0
 var player = null
 
 func _ready():
+	# Registrar al grupo para que el raycast del player pueda identificarlo
+	add_to_group("enemy")
 	# Buscar al jugador
 	player = get_tree().get_first_node_in_group("player")
 	

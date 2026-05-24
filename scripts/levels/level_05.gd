@@ -31,9 +31,13 @@ func _ready() -> void:
 
 	start_time = Time.get_ticks_msec() / 1000.0
 
-	# Override boss HP tras el _ready de enemy_tank (default = 8 post-balance)
+	# Override boss HP tras el _ready de enemy_tank (default = 8 post-balance).
+	# max_health y display_name también deben sincronizarse para que el
+	# indicador del HUD muestre "50 / 50" y el nombre correcto del boss.
 	await get_tree().process_frame
 	boss.health = 50
+	boss.max_health = 50
+	boss.display_name = "JEFE: NÚCLEO"
 	print("[Level05] Boss HP override: ", boss.health)
 
 func _on_enemy_died(_e: Node) -> void:

@@ -8,6 +8,18 @@ shader = ExtResource("2_vignette")
 shader_parameter/intensity = 0.0
 shader_parameter/vignette_color = Color(1, 0, 0, 1)
 
+[sub_resource type="StyleBoxFlat" id="bar_box_style"]
+bg_color = Color(0, 0, 0, 0.55)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0.866, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
 [node name="HUD" type="CanvasLayer" unique_id=1386771509]
 script = ExtResource("1_0mwgc")
 
@@ -64,6 +76,65 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 30
 text = "+"
+
+[node name="EnemyHealthIndicator" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -90.0
+offset_right = 110.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0)
+
+[node name="VBox" type="VBoxContainer" parent="EnemyHealthIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="EnemyHealthIndicator/VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Centinela"
+horizontal_alignment = 1
+
+[node name="BarBox" type="Panel" parent="EnemyHealthIndicator/VBox"]
+custom_minimum_size = Vector2(200, 14)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("bar_box_style")
+
+[node name="BarFill" type="ColorRect" parent="EnemyHealthIndicator/VBox/BarBox"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+mouse_filter = 2
+color = Color(0.2, 1, 0.3, 1)
+
+[node name="HPLabel" type="Label" parent="EnemyHealthIndicator/VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.85, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "0 / 0"
+horizontal_alignment = 1
 
 [node name="MessageLabel" type="Label" parent="." unique_id=1657762883]
 anchors_preset = 8

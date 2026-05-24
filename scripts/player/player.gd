@@ -21,6 +21,9 @@ var current_weapon_index: int = 0
 var shoot_cooldown: float = 0.0
 var debug_shooting: bool = false  # poner true para logs por pellet
 
+# === HUD INDICATOR ===
+var enemy_indicator_max_distance: float = 40.0
+
 # === REFERENCIAS ===
 @onready var camera = $Camera3D
 @onready var raycast = $Camera3D/RayCast3D
@@ -191,6 +194,21 @@ func update_hud():
 		if not weapons.is_empty():
 			hud.update_weapon(weapons[current_weapon_index].weapon_name)
 
+func _update_enemy_indicator():
+	# Si el raycast (ya activo para build) está golpeando un enemigo dentro
+	# del rango útil, pasamos la referencia al HUD; si no, pasamos null y
+	# el HUD se fade-out.
+	if not hud or not hud.has_method("update_enemy_indicator"):
+		return
+	var aimed: Node = null
+	if raycast.is_colliding():
+		var collider = raycast.get_collider()
+		if collider and collider.is_in_group("enemy"):
+			var distance: float = camera.global_position.distance_to(raycast.get_collision_point())
+			if distance <= enemy_indicator_max_distance:
+				aimed = collider
+	hud.update_enemy_indicator(aimed)
+
 func die():
 	AudioManager.play_sfx("enemy_death", 0.0, 0.8)
 	print("=== HAS MUERTO ===")
@@ -226,5 +244,7 @@ func _physics_process(delta):
 	else:
 		velocity.x = 0
 		velocity.z = 0
-	
+
 	move_and_slide()
+
+	_update_enemy_indicator()

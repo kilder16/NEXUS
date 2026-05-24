@@ -10,6 +10,15 @@ extends CanvasLayer
 @onready var crosshair = $Crosshair
 @onready var message_label = $MessageLabel
 
+# Indicador de salud de enemigos (aparece cuando el player apunta a uno)
+@onready var enemy_indicator: Control = $EnemyHealthIndicator
+@onready var enemy_name_label: Label = $EnemyHealthIndicator/VBox/NameLabel
+@onready var enemy_bar_fill: ColorRect = $EnemyHealthIndicator/VBox/BarBox/BarFill
+@onready var enemy_hp_label: Label = $EnemyHealthIndicator/VBox/HPLabel
+
+var enemy_indicator_target_alpha: float = 0.0
+const ENEMY_INDICATOR_FADE_RATE: float = 12.0  # ~0.25s para llegar al target
+
 var block_names = ["Muro", "Rampa", "Plataforma"]
 
 func _ready():
@@ -18,12 +27,20 @@ func _ready():
 	if message_label:
 		message_label.visible = false
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	# Ocultar crosshair cuando el mouse no está capturado (pause, winscreen,
 	# gameover, settings). Una sola regla universal evita tocar cada caller
 	# de Input.set_mouse_mode.
 	if crosshair:
 		crosshair.visible = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+	# Fade del indicador de enemigo hacia su alpha objetivo (suaviza on/off
+	# del raycast cuando el aim pasa por el borde del enemigo).
+	if enemy_indicator:
+		enemy_indicator.modulate.a = lerp(
+			enemy_indicator.modulate.a,
+			enemy_indicator_target_alpha,
+			clamp(delta * ENEMY_INDICATOR_FADE_RATE, 0.0, 1.0)
+		)
 
 func update_health(current_health: int, max_health: int):
 	if health_label:
@@ -50,3 +67,25 @@ func show_message(text: String, duration: float = 2.0):
 		message_label.visible = true
 		await get_tree().create_timer(duration).timeout
 		message_label.visible = false
+
+func update_enemy_indicator(enemy) -> void:
+	# Llamado por player.gd cada frame con el enemigo apuntado o null.
+	if not enemy_indicator:
+		return
+	if enemy == null:
+		enemy_indicator_target_alpha = 0.0
+		return
+	enemy_indicator_target_alpha = 1.0
+	if enemy_name_label:
+		enemy_name_label.text = enemy.display_name
+	if enemy_hp_label:
+		enemy_hp_label.text = "%d / %d" % [enemy.health, enemy.max_health]
+	var ratio: float = float(enemy.health) / float(max(1, enemy.max_health))
+	if enemy_bar_fill:
+		enemy_bar_fill.anchor_right = clamp(ratio, 0.0, 1.0)
+		if ratio > 0.6:
+			enemy_bar_fill.color = Color(0.2, 1.0, 0.3, 1.0)   # verde
+		elif ratio > 0.3:
+			enemy_bar_fill.color = Color(1.0, 0.85, 0.15, 1.0) # amarillo
+		else:
+			enemy_bar_fill.color = Color(1.0, 0.2, 0.2, 1.0)   # rojo

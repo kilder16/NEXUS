@@ -9,6 +9,8 @@ var preferred_distance = 8.0
 func _ready():
 	super._ready()
 	health = 4
+	max_health = 4
+	display_name = "Tirador"
 	attack_range = 12.0
 	detect_range = 15.0
 	attack_cooldown = 1.5

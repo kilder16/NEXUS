@@ -6,6 +6,8 @@ extends "res://scripts/ai/enemy.gd"
 func _ready():
 	super._ready()
 	health = 2
+	max_health = 2
+	display_name = "Asaltante"
 	speed = 5.0
 	chase_speed = 8.0
 	attack_damage = 2
