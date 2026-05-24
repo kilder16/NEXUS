@@ -10,3 +10,6 @@
 
 # Claude Code metadata local (settings, memoria, etc.)
 .claude/
+
+# Build output (Godot exports — no shipear binarios al repo)
+/build/
