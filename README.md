@@ -1,115 +1,88 @@
 # NEXUS
 
-> A tactical FPS with sandbox construction. Infiltrate. Adapt. Disconnect The Core.
+> Infiltrate. Adapt. Disconnect The Core.
 
-`Built with Godot 4.6` · `GDScript` · `Status: Alpha v0.95` · `Singleplayer`
+![Version](https://img.shields.io/badge/version-1.0-blue)
+![Engine](https://img.shields.io/badge/Godot-4.6-478CBF?logo=godot-engine&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white)
+![License](https://img.shields.io/badge/license-Proprietary-red)
 
-## Overview
+## Sobre el juego
 
-NEXUS is a tactical first-person shooter built around a single core question: how do you survive when you can reshape the battlefield? Each level drops you into hostile territory with a fixed objective — reach the extraction zone — and a sandbox toolkit to get there. Combat is direct and decisive, but movement, cover, and verticality are entirely up to the player.
+NEXUS es un FPS táctico en primera persona con un sistema de construcción integrado al combate. Cada nivel te suelta en territorio hostil con un objetivo fijo —alcanzar la zona de extracción— y una caja de herramientas para reformar el campo de batalla en tiempo real. El tono es infiltración sci-fi oscura: Nexus es una IA hostil que controla cinco sectores, y vos sos el operador enviado a desconectar su Núcleo, sector por sector.
 
-The campaign spans five hand-crafted levels with thematic progression, from open-field skirmishes in early encounters to claustrophobic warehouse engagements and a final boss arena set inside a high-tech server core. Enemies escalate in complexity: fast melee swarmers, ranged shooters that maintain distance, heavy tanks that absorb damage, and a scaled boss variant with override health.
+## Características
 
-The construction system is woven into combat rather than separated from it. Right-click drops a block (wall, ramp, or platform) at your raycast target. Cycle types mid-fight with Q/E. Players can build cover on the fly, create elevated firing positions, or barricade choke points — without ever leaving combat.
+### 5 niveles diseñados a mano
+1. **Sector 01 — Infiltración** · Pasillo de tutorial implícito en estética sci-fi azul.
+2. **Sector 02 — Industrial** · Complejo segmentado con corridors, midroom y plataforma final.
+3. **Sector 03 — Complejo Militar** · Hangar abierto con vehículo abandonado, escalera a sala de control superior.
+4. **Sector 04 — Almacén** · Depósito con shelves, contenedores y un jefe local en oficina trasera.
+5. **Sector 05 — El Núcleo** · Arena octogonal tech-themed con gate progresivo: la zona de extracción solo se activa al matar al boss.
 
-The final level, "The Core," is a tech-themed boss arena that contrasts visually with the industrial aesthetic of the rest of the campaign. The objective shifts from reaching extraction to neutralizing the AI core itself. Killing the boss triggers a cinematic 1.5-second pause before the extraction zone activates, followed by a victory screen showing run statistics.
+### Enemigos (4 tipos + boss)
+- **Centinela** — patrullero base, 3 HP, daño 1.
+- **Asaltante** — rápido y frágil, 2 HP, daño 2.
+- **Bastión** — tank lento, 8 HP, daño 1.
+- **Tirador** — francotirador que mantiene distancia, 4 HP.
+- **JEFE: NÚCLEO** — boss del Sector 05, variante escalada de Bastión, 50 HP.
 
-## Features
+### Sistemas
+- **Construcción en tiempo real** — muros, rampas o plataformas con clic derecho. Cambiá tipo con Q/E sin pausar combate.
+- **3 armas** — pistola (precisa), escopeta (6 pellets con spread), rifle (alto daño).
+- **Configuración gráfica persistente** — fullscreen, VSync y calidad (Baja/Media/Alta) guardadas en `user://settings.cfg`.
+- **Indicador de salud de enemigos** estilo Halo — barra horizontal sobre el crosshair al apuntar a un enemigo a ≤40u, con nombre, HP numérico y color por umbral.
+- **Pause menu + WinScreen con stats** — tiempo y enemigos eliminados al cerrar cada sector.
+- **Audio procedural** — SFX y música generados al primer launch, con pitch variation y fade dinámico.
 
-### Combat System
-- 3 weapons: pistol, shotgun (6-pellet spread), rifle
-- 4 enemy types: fast melee, ranged shooters, heavy tanks, boss variant
-- Idempotent damage handling (no double-kill bugs)
-- Procedural audio with pitch variation
+## Controles
 
-### Construction System
-- Real-time block placement during combat
-- Cycle through block types with Q/E
-- Tactical use for cover or barricades
+| Acción | Tecla |
+|--------|-------|
+| Mover | WASD o flechas |
+| Mirar | Mouse |
+| Saltar | Espacio |
+| Disparar / destruir | Clic izquierdo |
+| Construir bloque | Clic derecho |
+| Cambiar tipo de bloque | Q / E |
+| Cambiar arma | 1 / 2 / 3 |
+| Reiniciar nivel | R |
+| Pausa / menú | ESC |
 
-### Visual Feedback
-- 5 particle effects: muzzle flash, wall impact, blood splatter, enemy death glitch, damage vignette
-- Procedural audio system with 7+ sound effects + ambient music
-- Cinematic boss death sequence (1.5s pause + audio fade)
+## Cómo jugar
 
-### Level Design
-- 5 hand-crafted levels with thematic progression:
-  1. Open Field — Tutorial encounters
-  2. Industrial Zone — Tight corridors
-  3. Abandoned Military Base — Vertical combat
-  4. Industrial Warehouse — Cover-based encounters
-  5. The Core — Boss arena with tech-themed aesthetic
+Esta es la versión **v1.0**, primer release público.
 
-## Controls
+1. Descargá el `.exe` de la última versión desde **[Releases en GitHub](https://github.com/kilder16/NEXUS/releases)**.
+2. Extraé el zip y ejecutá `nexus.exe`.
+3. Plataforma soportada: **Windows 10 / 11 (64-bit)**.
 
-| Action | Key |
-|--------|-----|
-| Move | WASD or Arrows |
-| Look | Mouse |
-| Jump | Space |
-| Shoot / Destroy | Left Click |
-| Place Block | Right Click |
-| Cycle Block Type | Q / E |
-| Switch Weapon | 1 / 2 / 3 |
-| Restart Level | R |
+El primer lanzamiento genera archivos de audio procedurales (~2–3 segundos); los lanzamientos siguientes cargan de disco.
 
-## Technical Highlights
+## Tecnologías
 
-### Architecture
-- Singleton pattern: AudioManager, ParticleManager
-- Signal-based death notifications (`died` signal in base enemy class)
-- Inheritance: `enemy_fast` / `enemy_tank` / `enemy_ranged` extend `enemy` base
-- Opt-out victory pattern in `objective.gd` (`use_default_victory` flag)
-- Defensive bus creation in runtime (handles import timing issues)
+- [**Godot 4.6**](https://godotengine.org/) — motor 3D, renderer Forward+, backend D3D12 en Windows.
+- **GDScript** — toda la lógica de gameplay.
+- **Jolt Physics** — motor de física 3D.
 
-### Audio
-- Procedural WAV generation on first launch (no audio assets shipped)
-- 3-bus mixer: Master / Music (-8dB) / SFX (-3dB)
-- Pitch variation on repeated SFX to avoid robotic feel
-- Seamless loop calculation for ambient music
+## Roadmap v1.1
 
-### Visual FX
-- GPUParticles3D-based effects with auto-free lifecycle
-- Custom `canvas_item` shader for damage vignette
-- Emissive materials for visibility in dark scenes
+Planeado, sin fecha confirmada:
 
-## Project Status
+- **Enemigos diferenciados con armas a distancia**
+  - Centinela con arma corta.
+  - Bastión con escudo destructible.
+- **Armas nuevas**: granadas, bazuca, cuchillo, hacha, sierra eléctrica.
+- **Multijugador cooperativo** (Fase 5).
 
-- Phase 1 (Prototype): Complete
-- Phase 2 (Menus & UI): Complete
-- Phase 3 (Enemies & Weapons): Complete
-- Phase 4 (Levels): Complete (5/5)
-- Phase 5 (Multiplayer): Planned
+Para detalles de arquitectura interna, estado de desarrollo y cómo correr el juego desde código, ver [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Overall: ~94% complete (singleplayer)
+## Créditos
 
-## Roadmap
+**Diseño y desarrollo: Leibnyz**
 
-### Pending (Phase 5)
-- Multiplayer architecture (ENet or WebSocket)
-- Co-op campaign mode
-- PvP arena mode
+Desarrollado con asistencia de [Claude Code](https://claude.com/claude-code) (Anthropic) para code review, decisiones de arquitectura y pair programming.
 
-### Polish Backlog
-- Enemy AI: melee attack range and aggression
-- Boss death trigger animation
-- More biomes for level variety
-- Settings menu (volume, controls, graphics)
+## Licencia
 
-## Run Locally
-
-```bash
-git clone https://github.com/kilder16/NEXUS.git
-cd NEXUS
-```
-
-1. Install [Godot 4.6+](https://godotengine.org/download)
-2. Open the project: `Project → Import → select project.godot`
-3. Press **F5** to run from the main scene, or **F6** to test the current scene
-4. First launch generates procedural audio placeholders (~2–3 seconds); subsequent launches load from disk
-
-## Credits
-
-**Designed and developed by Leibnyz**
-
-Developed with assistance from Claude (Anthropic) for code review, architecture decisions, and pair programming.
+© 2026 Leibnyz. Todos los derechos reservados.
