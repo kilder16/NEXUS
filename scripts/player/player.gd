@@ -9,6 +9,12 @@ var mouse_sensitivity = 0.002
 # === VIDA ===
 var max_health = 10
 var health = 10
+var is_dead: bool = false
+
+# Y bajo el cual el player muere automáticamente (out-of-bounds / caer al vacío).
+# Todos los pisos del juego están a Y≈0; -20 es ~20u debajo, imposible de
+# alcanzar por mecánicas normales.
+const FALL_DEATH_Y: float = -20.0
 
 # === CONSTRUCCIÓN ===
 var build_distance = 5.0
@@ -175,6 +181,8 @@ func place_block(pos: Vector3):
 	get_tree().current_scene.add_child(block)
 
 func take_damage(amount: int):
+	if is_dead:
+		return
 	AudioManager.play_sfx("hit", 0.0, 0.9)
 	ParticleManager.show_damage_vignette()
 	health -= amount
@@ -210,6 +218,9 @@ func _update_enemy_indicator():
 	hud.update_enemy_indicator(aimed)
 
 func die():
+	if is_dead:
+		return
+	is_dead = true
 	AudioManager.play_sfx("enemy_death", 0.0, 0.8)
 	print("=== HAS MUERTO ===")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -246,5 +257,9 @@ func _physics_process(delta):
 		velocity.z = 0
 
 	move_and_slide()
+
+	# Muerte por caer al vacío (fuera del polígono del piso).
+	if not is_dead and global_position.y < FALL_DEATH_Y:
+		die()
 
 	_update_enemy_indicator()
