@@ -99,15 +99,17 @@ func do_chase(delta):
 		current_state = State.PATROL
 		return
 	
-	var direction = (player.global_position - global_position)
-	direction.y = 0
+	# Distancia horizontal (ignora diferencia de altura player-enemigo)
+	var to_player = player.global_position - global_position
+	to_player.y = 0
+	var distance = to_player.length()
 	
-	if direction.length() < attack_range:
+	if distance < attack_range:
 		current_state = State.ATTACK
 		velocity.x = 0
 		velocity.z = 0
 	else:
-		direction = direction.normalized()
+		var direction = to_player.normalized()
 		velocity.x = direction.x * chase_speed
 		velocity.z = direction.z * chase_speed
 		look_at(global_position + direction, Vector3.UP)
@@ -117,17 +119,22 @@ func do_attack(delta):
 		current_state = State.PATROL
 		return
 	
-	var distance = global_position.distance_to(player.global_position)
+	# FIX: distancia horizontal (consistente con do_chase). Antes usaba distance_to() 3D,
+	# lo que provocaba que con un Δy grande entre player y enemigo (player con CollisionShape
+	# a la altura del torso, enemigo en piso) la condición de salida `distance > attack_range * 1.5`
+	# se cumpliera siempre al entrar, y el flujo rebotara ATTACK→CHASE→ATTACK sin llegar nunca
+	# al if del cooldown. Resultado: enemigos melee jamás aplicaban daño.
+	var to_player = player.global_position - global_position
+	to_player.y = 0
+	var distance = to_player.length()
 	
 	if distance > attack_range * 1.5:
 		current_state = State.CHASE
 		return
 	
 	# Mirar al jugador
-	var direction = (player.global_position - global_position)
-	direction.y = 0
-	if direction.length() > 0.1:
-		look_at(global_position + direction.normalized(), Vector3.UP)
+	if distance > 0.1:
+		look_at(global_position + to_player.normalized(), Vector3.UP)
 	
 	# Atacar si el cooldown terminó
 	if attack_timer <= 0:
@@ -138,7 +145,12 @@ func do_attack(delta):
 
 func check_player_distance():
 	if player == null:
-		return
+		# Reintentar lookup: los enemigos pueden inicializar antes que el player
+		# en el árbol del nivel, así que get_first_node_in_group('player') puede
+		# fallar en _ready(). Buscamos de nuevo hasta que el player aparezca.
+		player = get_tree().get_first_node_in_group("player")
+		if player == null:
+			return
 	
 	var distance = global_position.distance_to(player.global_position)
 	
