@@ -257,6 +257,14 @@ func _fire_hitscan(w: Weapon) -> void:
 					print("[shoot]   -> take_damage(", w.damage, ") en ", target.name)
 				target.take_damage(w.damage)
 				ParticleManager.spawn_blood(result.position)
+				# Hitmarker + tick agudo confirman el impacto al jugador.
+				# Sólo dispara una vez por escopetazo aunque varios pellets peguen
+				# (cada pellet llama acá, pero show_hitmarker matiene el tween).
+				if target.is_in_group("enemy"):
+					# Hitmarker visual diferido a v1.2 (HUD CanvasLayer no
+					# renderiza Controls hijos nuevos por root cause sin
+					# diagnosticar). El SFX cubre el feedback auditivo.
+					AudioManager.play_sfx("hitmarker_tick")
 			else:
 				ParticleManager.spawn_impact(result.position, result.normal, "wall")
 

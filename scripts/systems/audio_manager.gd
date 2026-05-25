@@ -70,6 +70,7 @@ func _setup_streams() -> void:
 	_sfx_streams["ui_click"] = _ensure_stream(SFX_DIR + "ui_click.wav", _gen_ui_click)
 	_sfx_streams["empty_click"] = _ensure_stream(SFX_DIR + "empty_click.wav", _gen_empty_click)
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
+	_sfx_streams["hitmarker_tick"] = _ensure_stream(SFX_DIR + "hitmarker_tick.wav", _gen_hitmarker_tick)
 	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
 	_sfx_streams["chop"] = _ensure_stream(SFX_DIR + "chop.wav", _gen_chop)
 	# saw_motor: stream loopeable. El importador de WAV de Godot descarta
@@ -411,6 +412,21 @@ func _gen_stab() -> AudioStreamWAV:
 		var tonal: float = sin(TAU * 1400.0 * t) * _env_ad(t, 0.001, 0.020)
 		var s: float = noise * env_n * 0.6 + tonal * 0.3
 		_write_sample(data, i, s * 0.85)
+	return _build_stream(data, sr)
+
+func _gen_hitmarker_tick() -> AudioStreamWAV:
+	# Tick agudo corto para confirmar hit en enemigo. Sine 2500 Hz con
+	# envolvente attack-decay muy rápido. Bajo volumen para no enmascarar
+	# el shot SFX que suena en el mismo frame.
+	var sr := 44100
+	var dur := 0.04
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		var s: float = sin(TAU * 2500.0 * t) * _env_ad(t, 0.001, 0.015) * 0.45
+		_write_sample(data, i, s)
 	return _build_stream(data, sr)
 
 func _gen_empty_click() -> AudioStreamWAV:

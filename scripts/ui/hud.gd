@@ -158,6 +158,15 @@ func update_weapon(weapon_name: String, current_index: int = 0, total_weapons: i
 			else:
 				lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4, 1))
 
+func show_hitmarker(_color: Color = Color(1, 0.9, 0.2, 1)) -> void:
+	# Hitmarker visual diferido a v1.2. El SFX "hitmarker_tick" en
+	# player.gd cubre el feedback auditivo (80% del valor del hitmarker).
+	# El indicador visual de chevrons fue problemático: tanto _draw()
+	# custom como ColorRect rotados pasaron el diagnóstico funcional
+	# pero no se renderizaron en pantalla. Probable root cause en el HUD
+	# CanvasLayer; a investigar en v1.2 con rediseño del HUD.
+	pass
+
 func show_message(text: String, duration: float = 2.0):
 	if message_label:
 		message_label.text = text
