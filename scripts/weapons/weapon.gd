@@ -12,6 +12,13 @@ var spread: float      # dispersión en radianes (0 = sin spread)
 var pellets: int       # número de raycasts por disparo
 var max_ammo: int      # < 0 = infinita; >= 0 = capacidad por nivel
 var ammo: int          # munición restante (< 0 = infinita)
+# Discriminador de handler en player.gd::shoot(). Valores soportados:
+#   "hitscan"      (pistola/rifle/escopeta — raycast inmediato)
+#   "grenade"      (slot 4 — RigidBody con fuse)
+#   "rocket"       (slot 5 — proyectil lineal, en Feature 2.4)
+#   "melee_swing"  (slots 6-7 — swing puntual, en Features 3.2/3.3)
+#   "melee_held"   (slot 8 — DPS continuo, en Feature 3.4)
+var type: String
 
 func _init(
 	p_name: String,
@@ -21,6 +28,7 @@ func _init(
 	p_spread: float = 0.0,
 	p_pellets: int = 1,
 	p_max_ammo: int = -1,
+	p_type: String = "hitscan",
 ):
 	weapon_name = p_name
 	damage = p_damage
@@ -30,6 +38,7 @@ func _init(
 	pellets = p_pellets
 	max_ammo = p_max_ammo
 	ammo = p_max_ammo
+	type = p_type
 
 func has_limited_ammo() -> bool:
 	return max_ammo >= 0

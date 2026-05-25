@@ -39,6 +39,12 @@ var enemy_indicator_max_distance: float = 40.0
 # Precargar la escena del bloque
 var block_scene = preload("res://scenes/building/block.tscn")
 
+# Escenas de armas no-hitscan (granadas, cohetes, etc).
+const GRENADE_SCENE: PackedScene = preload("res://scenes/weapons/grenade.tscn")
+# Parámetros de lanzamiento de granada (arco hacia donde apunta la cámara).
+const GRENADE_THROW_FORCE: float = 12.0
+const GRENADE_LIFT: float = 3.0
+
 func _ready():
 	add_to_group("player")
 	setup_weapons()
@@ -65,6 +71,9 @@ func setup_weapons():
 		Weapon.new("Pistola", 1, 0.2, 50.0),
 		Weapon.new("Escopeta", 3, 0.8, 10.0, 0.12, 6),
 		Weapon.new("Rifle", 2, 0.4, 100.0),
+		# Slot 4: Granada. fire_rate 2.0s (cooldown entre lanzamientos),
+		# max_ammo 3 (se resetea naturalmente en cada nivel vía _ready).
+		Weapon.new("Granada", 0, 2.0, 0.0, 0.0, 1, 3, "grenade"),
 	]
 
 func _input(event):
@@ -137,10 +146,24 @@ func shoot():
 		AudioManager.play_sfx("empty_click")
 		shoot_cooldown = 0.25  # pequeño debounce para que el click no spamme.
 		return
+
+	# Branchear por tipo. Cada handler aplica su efecto; el consumo de
+	# munición y cooldown sucede acá para todos por igual.
+	match w.type:
+		"hitscan":
+			_fire_hitscan(w)
+		"grenade":
+			_throw_grenade(w)
+		_:
+			push_warning("Tipo de arma no soportado todavía: " + w.type)
+			return
+
 	w.consume_ammo()
 	if w.has_limited_ammo():
 		update_hud()
 	shoot_cooldown = w.fire_rate
+
+func _fire_hitscan(w: Weapon) -> void:
 	AudioManager.play_sfx_pitched("shot")
 	ParticleManager.spawn_muzzle_flash(
 		camera.global_position - camera.global_transform.basis.z * 0.5,
@@ -177,6 +200,17 @@ func shoot():
 				ParticleManager.spawn_blood(result.position)
 			else:
 				ParticleManager.spawn_impact(result.position, result.normal, "wall")
+
+func _throw_grenade(_w: Weapon) -> void:
+	var grenade: RigidBody3D = GRENADE_SCENE.instantiate()
+	get_tree().current_scene.add_child(grenade)
+	# Spawn justo delante de la cámara para no chocar consigo mismo en el primer frame.
+	var forward: Vector3 = -camera.global_transform.basis.z
+	grenade.global_position = camera.global_position + forward * 0.6
+	# Velocidad inicial: empuje hacia adelante + lift para que el arco
+	# sea visible en distancia media.
+	grenade.linear_velocity = forward * GRENADE_THROW_FORCE + Vector3.UP * GRENADE_LIFT
+	AudioManager.play_sfx_pitched("shot")
 
 func build():
 	if raycast.is_colliding():

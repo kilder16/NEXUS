@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://ivr8hyef0uwu"]
+
+[ext_resource type="Script" path="res://scripts/effects/explosion_fx.gd" id="1_explfx"]
+
+[sub_resource type="Gradient" id="grad_expl_inner"]
+offsets = PackedFloat32Array(0, 0.3, 0.7, 1)
+colors = PackedColorArray(1, 1, 0.8, 1, 1, 0.6, 0.1, 1, 0.7, 0.2, 0.05, 0.8, 0.1, 0.05, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="grad_expl"]
+gradient = SubResource("grad_expl_inner")
+
+[sub_resource type="ParticleProcessMaterial" id="proc_expl"]
+emission_shape = 1
+emission_sphere_radius = 0.4
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 6.0
+initial_velocity_max = 14.0
+gravity = Vector3(0, -1.5, 0)
+color = Color(1, 0.7, 0.15, 1)
+color_ramp = SubResource("grad_expl")
+scale_min = 0.2
+scale_max = 0.4
+
+[sub_resource type="BoxMesh" id="expl_shard_mesh"]
+size = Vector3(0.18, 0.18, 0.18)
+
+[sub_resource type="SphereMesh" id="shockwave_mesh"]
+radius = 1.0
+height = 2.0
+radial_segments = 32
+rings = 16
+
+[sub_resource type="StandardMaterial3D" id="shockwave_mat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.95, 0.7, 0.6)
+emission_enabled = true
+emission = Color(1, 0.85, 0.4, 1)
+emission_energy_multiplier = 1.5
+
+[node name="Explosion" type="Node3D"]
+script = ExtResource("1_explfx")
+
+[node name="Particles" type="GPUParticles3D" parent="."]
+emitting = true
+amount = 64
+lifetime = 0.7
+one_shot = true
+explosiveness = 0.98
+process_material = SubResource("proc_expl")
+draw_pass_1 = SubResource("expl_shard_mesh")
+
+[node name="Flash" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.9, 0.6, 1)
+light_energy = 8.0
+omni_range = 8.0
+
+[node name="Shockwave" type="MeshInstance3D" parent="."]
+mesh = SubResource("shockwave_mesh")
+surface_material_override/0 = SubResource("shockwave_mat")

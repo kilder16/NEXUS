@@ -69,6 +69,7 @@ func _setup_streams() -> void:
 	_sfx_streams["ui_hover"] = _ensure_stream(SFX_DIR + "ui_hover.wav", _gen_ui_hover)
 	_sfx_streams["ui_click"] = _ensure_stream(SFX_DIR + "ui_click.wav", _gen_ui_click)
 	_sfx_streams["empty_click"] = _ensure_stream(SFX_DIR + "empty_click.wav", _gen_empty_click)
+	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
 	_music_streams["menu_music"] = _ensure_stream(MUSIC_DIR + "menu_music.wav", _gen_menu_music, true)
 
 func _ensure_stream(path: String, generator: Callable, is_music: bool = false) -> AudioStreamWAV:
@@ -284,6 +285,27 @@ func _gen_ui_click() -> AudioStreamWAV:
 		var tonal: float = sin(TAU * 1200.0 * t) * _env_ad(t, 0.001, 0.035)
 		var s: float = (noise * 0.3 + tonal * 0.5) * env_n
 		_write_sample(data, i, s * 0.8)
+	return _build_stream(data, sr)
+
+func _gen_explosion() -> AudioStreamWAV:
+	# "Boom" grave: sub-tono cayendo (80→40 Hz) + crash de noise. Decay largo.
+	# Soft-clip al final para que el pico inicial no rompa speakers.
+	var sr := 44100
+	var dur := 0.7
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	var phase: float = 0.0
+	for i in range(n):
+		var t: float = float(i) / sr
+		var freq: float = lerp(80.0, 40.0, t / dur)
+		phase += TAU * freq / sr
+		var tonal: float = sin(phase) * _env_ad(t, 0.005, 0.500)
+		var noise: float = _rng.randf_range(-1.0, 1.0)
+		var noise_env: float = _env_ad(t, 0.002, 0.300)
+		var s: float = tonal * 0.65 + noise * noise_env * 0.55
+		s = _soft_clip(s, 0.75)
+		_write_sample(data, i, s * 0.9)
 	return _build_stream(data, sr)
 
 func _gen_empty_click() -> AudioStreamWAV:
