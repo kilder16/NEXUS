@@ -3,7 +3,10 @@ extends "res://scripts/ai/enemy.gd"
 # === ENEMY RANGED ===
 # Vida media, dispara proyectiles desde lejos y mantiene distancia.
 
-@export var projectile_scene: PackedScene
+# Escena del proyectil precargada (antes era @export sin asignación en el
+# .tscn → el Tirador nunca disparó desde v1.0 hasta v1.1). Mismo patrón que
+# enemy.gd::PROJECTILE_SHORT_SCENE para evitar el problema en el futuro.
+const PROJECTILE_SCENE: PackedScene = preload("res://scenes/enemies/projectile.tscn")
 var preferred_distance = 8.0
 
 func _ready():
@@ -82,11 +85,7 @@ func do_attack(_delta):
 		shoot_projectile()
 
 func shoot_projectile():
-	if projectile_scene == null:
-		push_warning("EnemyRanged: projectile_scene no asignado en el inspector")
-		return
-
-	var projectile = projectile_scene.instantiate()
+	var projectile = PROJECTILE_SCENE.instantiate()
 	get_tree().current_scene.add_child(projectile)
 
 	# Spawn ligeramente delante para no colisionar consigo mismo
