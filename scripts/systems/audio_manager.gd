@@ -70,6 +70,7 @@ func _setup_streams() -> void:
 	_sfx_streams["ui_click"] = _ensure_stream(SFX_DIR + "ui_click.wav", _gen_ui_click)
 	_sfx_streams["empty_click"] = _ensure_stream(SFX_DIR + "empty_click.wav", _gen_empty_click)
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
+	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
 	_music_streams["menu_music"] = _ensure_stream(MUSIC_DIR + "menu_music.wav", _gen_menu_music, true)
 
 func _ensure_stream(path: String, generator: Callable, is_music: bool = false) -> AudioStreamWAV:
@@ -306,6 +307,23 @@ func _gen_explosion() -> AudioStreamWAV:
 		var s: float = tonal * 0.65 + noise * noise_env * 0.55
 		s = _soft_clip(s, 0.75)
 		_write_sample(data, i, s * 0.9)
+	return _build_stream(data, sr)
+
+func _gen_stab() -> AudioStreamWAV:
+	# "Schk" seco corto: noise burst + un breve transient mid-high.
+	# Pensado para cuchillo. Decay rápido para no enmascarar el siguiente swing.
+	var sr := 44100
+	var dur := 0.08
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		var noise: float = _rng.randf_range(-1.0, 1.0)
+		var env_n: float = _env_ad(t, 0.001, 0.030)
+		var tonal: float = sin(TAU * 1400.0 * t) * _env_ad(t, 0.001, 0.020)
+		var s: float = noise * env_n * 0.6 + tonal * 0.3
+		_write_sample(data, i, s * 0.85)
 	return _build_stream(data, sr)
 
 func _gen_empty_click() -> AudioStreamWAV:

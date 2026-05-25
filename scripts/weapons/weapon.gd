@@ -20,6 +20,14 @@ var ammo: int          # munición restante (< 0 = infinita)
 #   "melee_held"   (slot 8 — DPS continuo, en Feature 3.4)
 var type: String
 
+# Parámetros específicos de armas melee. Asignados post-construcción para no
+# inflar _init con args opcionales que sólo aplican a algunos tipos:
+#   var w = Weapon.new("Cuchillo", 5, 0.3, 2.0, 0.0, 1, -1, "melee_swing")
+#   w.sfx_name = "stab"
+#   w.vfx_color = Color(1, 1, 1, 1)
+var sfx_name: String = ""
+var vfx_color: Color = Color(1, 1, 1, 1)
+
 func _init(
 	p_name: String,
 	p_damage: int,

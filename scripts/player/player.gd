@@ -42,9 +42,15 @@ var block_scene = preload("res://scenes/building/block.tscn")
 # Escenas de armas no-hitscan (granadas, cohetes, etc).
 const GRENADE_SCENE: PackedScene = preload("res://scenes/weapons/grenade.tscn")
 const ROCKET_SCENE: PackedScene = preload("res://scenes/weapons/rocket.tscn")
+const MELEE_SLASH_SCENE: PackedScene = preload("res://scenes/effects/melee_slash.tscn")
 # Parámetros de lanzamiento de granada (arco hacia donde apunta la cámara).
 const GRENADE_THROW_FORCE: float = 12.0
 const GRENADE_LIFT: float = 3.0
+# Distancia del slash respecto a la cámara cuando se spawnea.
+const MELEE_SLASH_FORWARD: float = 0.9
+# Magnitud del kick de cámara al swing melee. ~1° hacia arriba, recovery rápido.
+const MELEE_SHAKE_AMOUNT: float = 0.018
+const MELEE_SHAKE_DURATION: float = 0.08
 
 func _ready():
 	add_to_group("player")
@@ -79,6 +85,12 @@ func setup_weapons():
 		# que la granada y es directo, así que es más limitada).
 		Weapon.new("Bazuca", 0, 1.5, 0.0, 0.0, 1, 2, "rocket"),
 	]
+	# Slot 6: Cuchillo. Rápido (0.3s), daño 5, rango 2u. Munición infinita
+	# (default). sfx/color asignados post-creación para no inflar _init.
+	var knife: Weapon = Weapon.new("Cuchillo", 5, 0.3, 2.0, 0.0, 1, -1, "melee_swing")
+	knife.sfx_name = "stab"
+	knife.vfx_color = Color(1, 1, 1, 1)
+	weapons.append(knife)
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -160,6 +172,8 @@ func shoot():
 			_throw_grenade(w)
 		"rocket":
 			_fire_rocket(w)
+		"melee_swing":
+			do_melee_swing(w.damage, w.max_range, w.sfx_name, w.vfx_color)
 		_:
 			push_warning("Tipo de arma no soportado todavía: " + w.type)
 			return
@@ -227,6 +241,52 @@ func _fire_rocket(_w: Weapon) -> void:
 	rocket.direction = forward
 	rocket.shooter = self
 	AudioManager.play_sfx_pitched("shot")
+
+# Swing melee compartido por cuchillo / hacha / sierra (3.2, 3.3, 3.4).
+# El raycast es corto desde la cámara; si pega a algo con take_damage,
+# aplica daño y partículas de impacto. SFX + slash visual + kick de cámara.
+func do_melee_swing(damage: int, range_: float, sfx_name: String, vfx_color: Color) -> void:
+	# 1) Raycast corto desde la cámara para detectar el primer impacto.
+	var space_state: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var origin: Vector3 = camera.global_position
+	var forward: Vector3 = -camera.global_transform.basis.z
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + forward * range_)
+	query.exclude = [self.get_rid()]
+	var result: Dictionary = space_state.intersect_ray(query)
+	if result:
+		var target: Node = result.collider
+		if target and target.has_method("take_damage"):
+			target.take_damage(damage)
+			ParticleManager.spawn_blood(result.position)
+		else:
+			ParticleManager.spawn_impact(result.position, result.normal, "wall")
+
+	# 2) SFX (si el caller pasó uno).
+	if sfx_name != "":
+		AudioManager.play_sfx_pitched(sfx_name)
+
+	# 3) Slash visual delante de la cámara, encarado en su dirección.
+	var slash: Node3D = MELEE_SLASH_SCENE.instantiate()
+	get_tree().current_scene.add_child(slash)
+	slash.global_position = camera.global_position + forward * MELEE_SLASH_FORWARD
+	# Alinear el quad a la cámara: mismo basis, su normal queda hacia el player.
+	slash.global_transform.basis = camera.global_transform.basis
+	if slash.has_method("play"):
+		slash.play(vfx_color)
+
+	# 4) Kick de cámara breve.
+	_camera_shake_pulse(MELEE_SHAKE_AMOUNT, MELEE_SHAKE_DURATION)
+
+func _camera_shake_pulse(amount: float = 0.02, duration: float = 0.08) -> void:
+	# Pulse muy breve: pisa rotation.x durante ~80ms. Si el mouse se está
+	# moviendo, el drift es despreciable (< 1 frame de input).
+	if camera == null:
+		return
+	var base_x: float = camera.rotation.x
+	var peak_x: float = clamp(base_x - amount, -1.5, 1.5)
+	var t: Tween = create_tween()
+	t.tween_property(camera, "rotation:x", peak_x, duration * 0.4)
+	t.tween_property(camera, "rotation:x", base_x, duration * 0.6)
 
 func build():
 	if raycast.is_colliding():

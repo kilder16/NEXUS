@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://da5wvp0rq4j4c"]
+
+[ext_resource type="Script" path="res://scripts/effects/melee_slash.gd" id="1_slash"]
+
+[sub_resource type="QuadMesh" id="SlashQuad"]
+size = Vector2(1.4, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="SlashMat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.9)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 2.2
+blend_mode = 1
+
+[node name="MeleeSlash" type="Node3D"]
+script = ExtResource("1_slash")
+
+[node name="Slash" type="MeshInstance3D" parent="."]
+mesh = SubResource("SlashQuad")
+surface_material_override/0 = SubResource("SlashMat")
