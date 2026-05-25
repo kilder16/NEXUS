@@ -30,6 +30,15 @@ var debug_shooting: bool = false  # poner true para logs por pellet
 # === HUD INDICATOR ===
 var enemy_indicator_max_distance: float = 40.0
 
+# === SIERRA (slot 8) ===
+# Estado runtime del input-held de la sierra. _saw_audio es el handle
+# devuelto por AudioManager.play_sfx_loop, _saw_sparks el GPUParticles3D
+# persistente que se reposiciona al contact point cada frame.
+var _saw_active: bool = false
+var _saw_damage_timer: float = 0.0
+var _saw_audio: AudioStreamPlayer = null
+var _saw_sparks: GPUParticles3D = null
+
 # === REFERENCIAS ===
 @onready var camera = $Camera3D
 @onready var raycast = $Camera3D/RayCast3D
@@ -43,6 +52,11 @@ var block_scene = preload("res://scenes/building/block.tscn")
 const GRENADE_SCENE: PackedScene = preload("res://scenes/weapons/grenade.tscn")
 const ROCKET_SCENE: PackedScene = preload("res://scenes/weapons/rocket.tscn")
 const MELEE_SLASH_SCENE: PackedScene = preload("res://scenes/effects/melee_slash.tscn")
+const SAW_SPARKS_SCENE: PackedScene = preload("res://scenes/effects/saw_sparks.tscn")
+
+# Sierra (slot 8 / type "melee_held"): daño 2 cada 0.1s = 20 DPS, rango 2u.
+const SAW_DAMAGE_INTERVAL: float = 0.1
+const SAW_RANGE: float = 2.0
 # Parámetros de lanzamiento de granada (arco hacia donde apunta la cámara).
 const GRENADE_THROW_FORCE: float = 12.0
 const GRENADE_LIFT: float = 3.0
@@ -55,6 +69,13 @@ const MELEE_SHAKE_DURATION: float = 0.08
 func _ready():
 	add_to_group("player")
 	setup_weapons()
+	# GPUParticles3D persistente para chispas de sierra. Hijo del player para
+	# limpieza automática al reload de nivel; sin embargo seteamos
+	# local_coords=false vía .tscn para que las partículas queden en world
+	# space y no sigan al player cuando este se mueve.
+	_saw_sparks = SAW_SPARKS_SCENE.instantiate()
+	add_child(_saw_sparks)
+	_saw_sparks.emitting = false
 
 	print("=== NEXUS - PLAYER INICIADO ===")
 	print("Controles:")
@@ -97,6 +118,13 @@ func setup_weapons():
 	axe.sfx_name = "chop"
 	axe.vfx_color = Color(1.0, 0.2, 0.2, 1)
 	weapons.append(axe)
+	# Slot 8: Sierra eléctrica. type "melee_held": DPS continuo mientras LMB
+	# apretado. damage=2 cada 0.1s = 20 DPS, rango 2u. fire_rate=0 porque el
+	# cooldown global no aplica (la lógica vive en _physics_process).
+	var saw: Weapon = Weapon.new("Sierra", 2, 0.0, SAW_RANGE, 0.0, 1, -1, "melee_held")
+	saw.sfx_name = "saw_motor"
+	saw.vfx_color = Color(1.0, 0.85, 0.3, 1)
+	weapons.append(saw)
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -180,6 +208,11 @@ func shoot():
 			_fire_rocket(w)
 		"melee_swing":
 			do_melee_swing(w.damage, w.max_range, w.sfx_name, w.vfx_color)
+		"melee_held":
+			# El input held se maneja en _physics_process / _update_saw_input.
+			# Este click discreto no hace nada; el `pass` evita el warning del
+			# default case y mantiene shoot() consistente para todas las armas.
+			pass
 		_:
 			push_warning("Tipo de arma no soportado todavía: " + w.type)
 			return
@@ -399,3 +432,67 @@ func _physics_process(delta):
 		die()
 
 	_update_enemy_indicator()
+	_update_saw_input(delta)
+
+# Sierra eléctrica (slot 8, type "melee_held"). Lógica de input held +
+# tick de daño + reposicionamiento de chispas. Se llama cada frame desde
+# _physics_process.
+func _update_saw_input(delta: float) -> void:
+	var w: Weapon = null
+	if not weapons.is_empty():
+		w = weapons[current_weapon_index]
+	var is_saw: bool = w != null and w.type == "melee_held"
+	var lmb_held: bool = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	# Detener si cambiaste de arma o soltaste LMB.
+	if not is_saw or not lmb_held or is_dead:
+		if _saw_active:
+			_stop_saw()
+		return
+	if not _saw_active:
+		_start_saw(w)
+
+	# Raycast cada frame para responsividad de chispas (no esperan al tick
+	# de daño). El daño en sí se aplica solo cuando el timer expira.
+	var space_state: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var origin: Vector3 = camera.global_position
+	var forward: Vector3 = -camera.global_transform.basis.z
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + forward * SAW_RANGE)
+	query.exclude = [self.get_rid()]
+	var result: Dictionary = space_state.intersect_ray(query)
+	var hit_target: Node = null
+	if result:
+		hit_target = result.collider
+		if _saw_sparks:
+			_saw_sparks.global_position = result.position
+			_saw_sparks.emitting = true
+	else:
+		if _saw_sparks:
+			_saw_sparks.emitting = false
+
+	# Tick de daño cada SAW_DAMAGE_INTERVAL segundos, sólo si hay hit válido.
+	_saw_damage_timer -= delta
+	if _saw_damage_timer <= 0.0:
+		_saw_damage_timer = SAW_DAMAGE_INTERVAL
+		if hit_target and hit_target.has_method("take_damage"):
+			hit_target.take_damage(w.damage)
+
+func _start_saw(w: Weapon) -> void:
+	_saw_active = true
+	_saw_damage_timer = 0.0  # tick inmediato al arrancar
+	if w.sfx_name != "":
+		_saw_audio = AudioManager.play_sfx_loop(w.sfx_name)
+
+func _stop_saw() -> void:
+	_saw_active = false
+	if _saw_audio:
+		AudioManager.stop_sfx_loop(_saw_audio)
+		_saw_audio = null
+	if _saw_sparks:
+		_saw_sparks.emitting = false
+
+func _exit_tree() -> void:
+	# Si la escena cambia o el player es queue_free con la sierra activa,
+	# parar el audio loop (AudioManager es autoload y el AudioStreamPlayer
+	# vive ahí; sin esto el motor seguiría sonando tras el reload).
+	if _saw_active:
+		_stop_saw()

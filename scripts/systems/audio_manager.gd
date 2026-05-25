@@ -72,6 +72,13 @@ func _setup_streams() -> void:
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
 	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
 	_sfx_streams["chop"] = _ensure_stream(SFX_DIR + "chop.wav", _gen_chop)
+	# saw_motor: stream loopeable. El importador de WAV de Godot descarta
+	# loop_mode, así que lo aplicamos en runtime (mismo patrón que la música).
+	var saw_stream: AudioStreamWAV = _ensure_stream(SFX_DIR + "saw_motor.wav", _gen_saw_motor)
+	saw_stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	saw_stream.loop_begin = 0
+	saw_stream.loop_end = int(saw_stream.get_length() * saw_stream.mix_rate)
+	_sfx_streams["saw_motor"] = saw_stream
 	_music_streams["menu_music"] = _ensure_stream(MUSIC_DIR + "menu_music.wav", _gen_menu_music, true)
 
 func _ensure_stream(path: String, generator: Callable, is_music: bool = false) -> AudioStreamWAV:
@@ -116,6 +123,30 @@ func play_sfx(snd_name: String, volume_db: float = 0.0, pitch: float = 1.0) -> v
 func play_sfx_pitched(snd_name: String, volume_db: float = 0.0) -> void:
 	var pitch: float = randf_range(0.95, 1.05)
 	play_sfx(snd_name, volume_db, pitch)
+
+# Reproduce un SFX en loop usando un AudioStreamPlayer dedicado (fuera del
+# pool one-shot). El caller debe guardar el handle devuelto y llamar
+# stop_sfx_loop() cuando termine (e.g. sierra al soltar LMB o cambiar arma).
+# El stream del SFX debe estar configurado con loop_mode = LOOP_FORWARD
+# (ver _setup_streams para saw_motor).
+func play_sfx_loop(snd_name: String, volume_db: float = 0.0, pitch: float = 1.0) -> AudioStreamPlayer:
+	if not _sfx_streams.has(snd_name):
+		push_warning("[AudioManager] SFX loop no encontrado: " + snd_name)
+		return null
+	var p := AudioStreamPlayer.new()
+	p.bus = "SFX"
+	p.stream = _sfx_streams[snd_name]
+	p.volume_db = volume_db
+	p.pitch_scale = pitch
+	add_child(p)
+	p.play()
+	return p
+
+func stop_sfx_loop(player: AudioStreamPlayer) -> void:
+	if player == null or not is_instance_valid(player):
+		return
+	player.stop()
+	player.queue_free()
 
 func play_music(snd_name: String, fade_in: float = MUSIC_FADE_DEFAULT) -> void:
 	if not _music_streams.has(snd_name):
@@ -308,6 +339,40 @@ func _gen_explosion() -> AudioStreamWAV:
 		var s: float = tonal * 0.65 + noise * noise_env * 0.55
 		s = _soft_clip(s, 0.75)
 		_write_sample(data, i, s * 0.9)
+	return _build_stream(data, sr)
+
+func _gen_saw_motor() -> AudioStreamWAV:
+	# Motosierra: motor 2-tiempos. Square 100 Hz (body, armónicos impares
+	# ricos) + sub-square 50 Hz (thump grave) + sine 600 Hz (buzz mecánico),
+	# todo modulado por AM envelope exp-decay a 40 Hz para dar "brap-brap"
+	# de combustión. LFO 2.5 Hz de amplitud para evitar sonido estático.
+	# Loop seamless: dur=0.4s, todas las frecuencias dan ciclos enteros
+	# (100*0.4=40, 50*0.4=20, 600*0.4=240, 40*0.4=16, 2.5*0.4=1), así
+	# sample[0] == sample[n] y el wrap no produce pop.
+	var sr := 44100
+	var dur := 0.4
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		# Body: square 100 Hz (armónicos impares 100/300/500/...).
+		var body_phase: float = fposmod(t * 100.0, 1.0)
+		var body: float = (1.0 if body_phase < 0.5 else -1.0) * 0.30
+		# Sub: square 50 Hz para thumping grave.
+		var sub_phase: float = fposmod(t * 50.0, 1.0)
+		var sub: float = (1.0 if sub_phase < 0.5 else -1.0) * 0.20
+		# Buzz mecánico de la cadena.
+		var buzz: float = sin(TAU * 600.0 * t) * 0.10
+		# Combustión: AM envelope a 40 Hz, exp-decay dentro de cada ciclo.
+		# combust_phase ∈ [0,1) → combust ∈ [~0.22, 1.0].
+		var combust_phase: float = fposmod(t * 40.0, 1.0)
+		var combust: float = exp(-combust_phase * 3.5) * 0.80 + 0.20
+		# LFO de amplitud sutil para "vida" sin tocar pitch (rompería loop).
+		var amp_lfo: float = 1.0 + 0.06 * sin(TAU * 2.5 * t)
+		var s: float = (body + sub + buzz) * combust * amp_lfo
+		s = _soft_clip(s, 0.75)
+		_write_sample(data, i, s * 0.45)
 	return _build_stream(data, sr)
 
 func _gen_chop() -> AudioStreamWAV:
