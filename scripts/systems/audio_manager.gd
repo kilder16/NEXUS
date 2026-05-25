@@ -71,6 +71,7 @@ func _setup_streams() -> void:
 	_sfx_streams["empty_click"] = _ensure_stream(SFX_DIR + "empty_click.wav", _gen_empty_click)
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
 	_sfx_streams["hitmarker_tick"] = _ensure_stream(SFX_DIR + "hitmarker_tick.wav", _gen_hitmarker_tick)
+	_sfx_streams["double_jump"] = _ensure_stream(SFX_DIR + "double_jump.wav", _gen_double_jump)
 	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
 	_sfx_streams["chop"] = _ensure_stream(SFX_DIR + "chop.wav", _gen_chop)
 	# saw_motor: stream loopeable. El importador de WAV de Godot descarta
@@ -412,6 +413,24 @@ func _gen_stab() -> AudioStreamWAV:
 		var tonal: float = sin(TAU * 1400.0 * t) * _env_ad(t, 0.001, 0.020)
 		var s: float = noise * env_n * 0.6 + tonal * 0.3
 		_write_sample(data, i, s * 0.85)
+	return _build_stream(data, sr)
+
+func _gen_double_jump() -> AudioStreamWAV:
+	# "Whoosh" agudo para el segundo salto. Sine sweep 600→1200 Hz con
+	# envolvente rápida (~80 ms). Diferenciable del SFX de hit (más grave).
+	var sr := 44100
+	var dur := 0.08
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	var phase: float = 0.0
+	for i in range(n):
+		var t: float = float(i) / sr
+		var freq: float = lerp(600.0, 1200.0, t / dur)
+		phase += TAU * freq / sr
+		var env: float = _env_ad(t, 0.003, 0.040)
+		var s: float = sin(phase) * env * 0.55
+		_write_sample(data, i, s)
 	return _build_stream(data, sr)
 
 func _gen_hitmarker_tick() -> AudioStreamWAV:

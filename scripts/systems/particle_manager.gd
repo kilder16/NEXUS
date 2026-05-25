@@ -7,6 +7,7 @@ const MUZZLE_FLASH := preload("res://scenes/effects/muzzle_flash.tscn")
 const IMPACT_WALL := preload("res://scenes/effects/impact_wall.tscn")
 const BLOOD_SPLATTER := preload("res://scenes/effects/blood_splatter.tscn")
 const ENEMY_DEATH_FX := preload("res://scenes/effects/enemy_death_fx.tscn")
+const JUMP_PUFF := preload("res://scenes/effects/jump_puff.tscn")
 
 const VIGNETTE_PEAK: float = 0.7
 const VIGNETTE_DURATION: float = 0.3
@@ -36,6 +37,11 @@ func spawn_blood(pos: Vector3) -> void:
 
 func spawn_enemy_death(pos: Vector3) -> void:
 	var inst: Node3D = ENEMY_DEATH_FX.instantiate()
+	_add_to_world(inst)
+	inst.global_position = pos
+
+func spawn_jump_puff(pos: Vector3) -> void:
+	var inst: Node3D = JUMP_PUFF.instantiate()
 	_add_to_world(inst)
 	inst.global_position = pos
 

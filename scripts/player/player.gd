@@ -6,6 +6,14 @@ var jump_velocity = 4.5
 var gravity = 9.8
 var mouse_sensitivity = 0.002
 
+# Doble salto: una segunda activación de salto en aire. Se consume al usarlo
+# y se resetea al tocar piso. _space_held_prev trackea el edge del input
+# para que el segundo salto requiera soltar y volver a apretar SPACE
+# (evita rebote auto si SPACE sigue held al saltar el primero).
+var has_double_jumped: bool = false
+var _space_held_prev: bool = false
+const DOUBLE_JUMP_VELOCITY_FACTOR: float = 0.9
+
 # === VIDA ===
 var max_health = 10
 var health = 10
@@ -410,9 +418,25 @@ func _physics_process(delta):
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-	
-	if Input.is_key_pressed(KEY_SPACE) and is_on_floor():
+
+	# Tracker de edge: detectar transición up→down del SPACE para que el
+	# segundo salto requiera soltar y re-apretar (no auto-rebota).
+	var space_held: bool = Input.is_key_pressed(KEY_SPACE)
+	var space_just_pressed: bool = space_held and not _space_held_prev
+	_space_held_prev = space_held
+
+	if space_held and is_on_floor():
 		velocity.y = jump_velocity
+	elif space_just_pressed and not is_on_floor() and not has_double_jumped:
+		velocity.y = jump_velocity * DOUBLE_JUMP_VELOCITY_FACTOR
+		has_double_jumped = true
+		AudioManager.play_sfx("double_jump")
+		ParticleManager.spawn_jump_puff(global_position)
+
+	# Reset del flag al pisar suelo (acá, no en is_on_floor branch arriba,
+	# para que sea claro que es post-physics).
+	if is_on_floor():
+		has_double_jumped = false
 	
 	var input_dir = Vector2.ZERO
 	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
