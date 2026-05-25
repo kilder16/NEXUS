@@ -71,6 +71,7 @@ func _setup_streams() -> void:
 	_sfx_streams["empty_click"] = _ensure_stream(SFX_DIR + "empty_click.wav", _gen_empty_click)
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
 	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
+	_sfx_streams["chop"] = _ensure_stream(SFX_DIR + "chop.wav", _gen_chop)
 	_music_streams["menu_music"] = _ensure_stream(MUSIC_DIR + "menu_music.wav", _gen_menu_music, true)
 
 func _ensure_stream(path: String, generator: Callable, is_music: bool = false) -> AudioStreamWAV:
@@ -305,6 +306,27 @@ func _gen_explosion() -> AudioStreamWAV:
 		var noise: float = _rng.randf_range(-1.0, 1.0)
 		var noise_env: float = _env_ad(t, 0.002, 0.300)
 		var s: float = tonal * 0.65 + noise * noise_env * 0.55
+		s = _soft_clip(s, 0.75)
+		_write_sample(data, i, s * 0.9)
+	return _build_stream(data, sr)
+
+func _gen_chop() -> AudioStreamWAV:
+	# "Thunk" grave: tonal sub que cae (180→90 Hz) + noise crash mid. Más
+	# pesado y largo que el stab para vender el arma pesada (hacha).
+	var sr := 44100
+	var dur := 0.18
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	var phase: float = 0.0
+	for i in range(n):
+		var t: float = float(i) / sr
+		var freq: float = lerp(180.0, 90.0, t / dur)
+		phase += TAU * freq / sr
+		var tonal: float = sin(phase) * _env_ad(t, 0.003, 0.120)
+		var noise: float = _rng.randf_range(-1.0, 1.0)
+		var noise_env: float = _env_ad(t, 0.001, 0.060)
+		var s: float = tonal * 0.7 + noise * noise_env * 0.45
 		s = _soft_clip(s, 0.75)
 		_write_sample(data, i, s * 0.9)
 	return _build_stream(data, sr)

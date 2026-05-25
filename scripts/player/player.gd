@@ -91,6 +91,12 @@ func setup_weapons():
 	knife.sfx_name = "stab"
 	knife.vfx_color = Color(1, 1, 1, 1)
 	weapons.append(knife)
+	# Slot 7: Hacha. Pesada (0.8s), daño 12, rango 2.5u. Mata casi todo de
+	# un golpe pero el cooldown impide spamear.
+	var axe: Weapon = Weapon.new("Hacha", 12, 0.8, 2.5, 0.0, 1, -1, "melee_swing")
+	axe.sfx_name = "chop"
+	axe.vfx_color = Color(1.0, 0.2, 0.2, 1)
+	weapons.append(axe)
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
