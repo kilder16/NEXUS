@@ -24,8 +24,20 @@ extends Control
 @onready var quality_option: OptionButton = $MarginContainer/VBoxContainer/QualityHBox/QualityOption
 @onready var back_button: Button = $MarginContainer/VBoxContainer/BackButton
 
+# Modo overlay: cuando es true, el menú se cierra emitiendo `closed` y haciendo
+# queue_free, sin tocar la escena actual. Se usa desde pause_menu para que no
+# se reinicie el nivel. Llamar open_as_overlay() antes de add_child() para
+# que tome efecto desde _ready.
+signal closed
+var overlay_mode: bool = false
+
 # Path de la escena anterior; el menú principal lo setea al instanciar este menú
 var previous_scene_path: String = "res://scenes/ui/main_menu.tscn"
+
+func open_as_overlay() -> void:
+	overlay_mode = true
+	# Procesa input aunque el juego esté pausado (pause_menu mantiene tree.paused = true).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func _ready():
 	# Consumir return path si alguien (pause_menu) lo seteó antes del swap.
@@ -60,7 +72,11 @@ func _on_quality_selected(index: int):
 	SettingsManager.set_quality(index)
 
 func _on_back_pressed():
-	get_tree().change_scene_to_file(previous_scene_path)
+	if overlay_mode:
+		closed.emit()
+		queue_free()
+	else:
+		get_tree().change_scene_to_file(previous_scene_path)
 
 func _unhandled_input(event):
 	# ESC también vuelve atrás
