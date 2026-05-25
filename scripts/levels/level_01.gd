@@ -10,6 +10,13 @@ const LEVEL_NARRATIVE: String = "Sector 01 asegurado.
 Avanzando hacia el siguiente módulo."
 const OBJECTIVE_HINT: String = "Misión: alcanzar la zona de extracción"
 
+# Balance pass v1.1 (task #5 Día 5): la combinación Asaltante (melee rápido)
+# + Centinela (ranged 1.5s) hacía pinza demasiado opresiva en el nivel
+# introductorio. Override sólo en level_01: Centinelas pasan a 2.5s entre
+# disparos. Otros niveles mantienen el cooldown default de 1.5s.
+const SENTINEL_COOLDOWN_OVERRIDE: float = 2.5
+const ENEMY_BASE_SCRIPT: Script = preload("res://scripts/ai/enemy.gd")
+
 @onready var objective: Area3D = $Objective
 @onready var win_screen: Control = $WinScreen
 @onready var hud: CanvasLayer = $HUD
@@ -22,11 +29,23 @@ func _ready() -> void:
 	objective.use_default_victory = false
 	objective.body_entered.connect(_on_objective_reached)
 
-	# Iterar enemigos del nivel para contar y trackear muertes
+	# Iterar enemigos del nivel para contar y trackear muertes + balance pass.
+	# Los enemies hacen su propio _ready antes que éste (orden bottom-up de
+	# Godot), así que get_script() y attack_cooldown ya están seteados con
+	# sus defaults cuando los leemos acá.
+	var sentinel_override_count: int = 0
 	for child in get_children():
 		if child.has_signal("died"):
 			child.died.connect(_on_enemy_died)
 			total_enemies += 1
+		# Override del cooldown sólo en Centinelas (script base enemy.gd
+		# puro; subclases enemy_fast/tank/ranged tienen sus propios scripts
+		# y no matchean).
+		if child.get_script() == ENEMY_BASE_SCRIPT:
+			child.attack_cooldown = SENTINEL_COOLDOWN_OVERRIDE
+			sentinel_override_count += 1
+	if sentinel_override_count > 0:
+		print("[Level01] Cooldown Centinela override: ", sentinel_override_count, " enemigos a ", SENTINEL_COOLDOWN_OVERRIDE, "s")
 
 	start_time = Time.get_ticks_msec() / 1000.0
 
