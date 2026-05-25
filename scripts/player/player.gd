@@ -51,7 +51,7 @@ func _ready():
 	print("  Clic Izquierdo = Disparar / Destruir")
 	print("  Clic Derecho = Construir bloque")
 	print("  Q / E = Cambiar tipo de bloque")
-	print("  1 / 2 / 3 = Cambiar arma")
+	print("  1..8 = Cambiar arma (slots disponibles según loadout)")
 	print("  R = Reiniciar nivel")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -102,6 +102,16 @@ func _input(event):
 			switch_weapon(1)
 		elif event.keycode == KEY_3 or event.keycode == KEY_KP_3:
 			switch_weapon(2)
+		elif event.keycode == KEY_4 or event.keycode == KEY_KP_4:
+			switch_weapon(3)
+		elif event.keycode == KEY_5 or event.keycode == KEY_KP_5:
+			switch_weapon(4)
+		elif event.keycode == KEY_6 or event.keycode == KEY_KP_6:
+			switch_weapon(5)
+		elif event.keycode == KEY_7 or event.keycode == KEY_KP_7:
+			switch_weapon(6)
+		elif event.keycode == KEY_8 or event.keycode == KEY_KP_8:
+			switch_weapon(7)
 		elif event.keycode == KEY_R:
 			get_tree().reload_current_scene()
 		elif event.keycode == KEY_H and debug_shooting:
@@ -200,7 +210,7 @@ func update_hud():
 		hud.update_health(health, max_health)
 		hud.update_block_type(current_block_type)
 		if not weapons.is_empty():
-			hud.update_weapon(weapons[current_weapon_index].weapon_name)
+			hud.update_weapon(weapons[current_weapon_index].weapon_name, current_weapon_index, weapons.size())
 
 func _update_enemy_indicator():
 	# Si el raycast (ya activo para build) está golpeando un enemigo dentro

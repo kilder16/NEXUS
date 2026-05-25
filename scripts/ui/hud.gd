@@ -6,9 +6,19 @@ extends CanvasLayer
 
 @onready var health_label = $HealthLabel
 @onready var block_label = $BlockLabel
-@onready var weapon_label = $WeaponLabel
+@onready var weapon_name_label: Label = $WeaponBox/WeaponNameLabel
+@onready var weapon_slots_hbox: HBoxContainer = $WeaponBox/WeaponSlotsHBox
 @onready var crosshair = $Crosshair
 @onready var message_label = $MessageLabel
+
+# Cantidad fija de slots de arma en el HUD (1..8). Coordinar con player.gd.
+const WEAPON_SLOT_COUNT: int = 8
+
+# Refs cacheadas a los PanelContainer de cada slot y sus styles.
+var _slot_panels: Array = []
+var _style_active: StyleBoxFlat
+var _style_available: StyleBoxFlat
+var _style_empty: StyleBoxFlat
 
 # Indicador de salud de enemigos (aparece cuando el player apunta a uno)
 @onready var enemy_indicator: Control = $EnemyHealthIndicator
@@ -28,6 +38,54 @@ func _ready():
 	# Ocultar mensaje inicial
 	if message_label:
 		message_label.visible = false
+	_setup_weapon_slot_styles()
+	_cache_weapon_slots()
+
+func _setup_weapon_slot_styles() -> void:
+	# Activo: bg cyan brillante, borde fino. Indica el arma seleccionada.
+	_style_active = StyleBoxFlat.new()
+	_style_active.bg_color = Color(0, 0.7, 0.95, 0.95)
+	_style_active.border_color = Color(0.5, 1, 1, 1)
+	_style_active.border_width_left = 1
+	_style_active.border_width_top = 1
+	_style_active.border_width_right = 1
+	_style_active.border_width_bottom = 1
+	_style_active.corner_radius_top_left = 3
+	_style_active.corner_radius_top_right = 3
+	_style_active.corner_radius_bottom_left = 3
+	_style_active.corner_radius_bottom_right = 3
+	# Disponible: arma equipada pero no activa.
+	_style_available = StyleBoxFlat.new()
+	_style_available.bg_color = Color(0, 0, 0, 0.55)
+	_style_available.border_color = Color(0.6, 0.6, 0.6, 1)
+	_style_available.border_width_left = 1
+	_style_available.border_width_top = 1
+	_style_available.border_width_right = 1
+	_style_available.border_width_bottom = 1
+	_style_available.corner_radius_top_left = 3
+	_style_available.corner_radius_top_right = 3
+	_style_available.corner_radius_bottom_left = 3
+	_style_available.corner_radius_bottom_right = 3
+	# Vacío: slot reservado a un arma futura, sin instancia activa.
+	_style_empty = StyleBoxFlat.new()
+	_style_empty.bg_color = Color(0, 0, 0, 0.3)
+	_style_empty.border_color = Color(0.25, 0.25, 0.25, 1)
+	_style_empty.border_width_left = 1
+	_style_empty.border_width_top = 1
+	_style_empty.border_width_right = 1
+	_style_empty.border_width_bottom = 1
+	_style_empty.corner_radius_top_left = 3
+	_style_empty.corner_radius_top_right = 3
+	_style_empty.corner_radius_bottom_left = 3
+	_style_empty.corner_radius_bottom_right = 3
+
+func _cache_weapon_slots() -> void:
+	_slot_panels.clear()
+	if weapon_slots_hbox == null:
+		return
+	for i in range(WEAPON_SLOT_COUNT):
+		var slot: PanelContainer = weapon_slots_hbox.get_node_or_null("Slot%d" % (i + 1))
+		_slot_panels.append(slot)
 
 func _process(delta: float) -> void:
 	# Ocultar crosshair cuando el mouse no está capturado (pause, winscreen,
@@ -59,9 +117,30 @@ func update_block_type(block_type: int):
 	if block_label:
 		block_label.text = "Bloque: %s [Q/E]" % block_names[block_type]
 
-func update_weapon(weapon_name: String):
-	if weapon_label:
-		weapon_label.text = "Arma: %s [1/2/3]" % weapon_name
+func update_weapon(weapon_name: String, current_index: int = 0, total_weapons: int = 1) -> void:
+	if weapon_name_label:
+		weapon_name_label.text = "Arma: %s" % weapon_name
+	for i in range(_slot_panels.size()):
+		var panel: PanelContainer = _slot_panels[i]
+		if panel == null:
+			continue
+		var style: StyleBoxFlat
+		if i == current_index:
+			style = _style_active
+		elif i < total_weapons:
+			style = _style_available
+		else:
+			style = _style_empty
+		panel.add_theme_stylebox_override("panel", style)
+		# Color del número: blanco en activo, amarillo en disponible, gris en vacío.
+		var lbl: Label = panel.get_node_or_null("Label")
+		if lbl:
+			if i == current_index:
+				lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+			elif i < total_weapons:
+				lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.3, 1))
+			else:
+				lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4, 1))
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:

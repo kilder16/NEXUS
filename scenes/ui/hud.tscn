@@ -61,14 +61,110 @@ offset_bottom = 73.0
 theme_override_font_sizes/font_size = 16
 text = "Bloque: Muro [Q/E]"
 
-[node name="WeaponLabel" type="Label" parent="." unique_id=864213057]
+[node name="WeaponBox" type="VBoxContainer" parent="."]
 offset_left = 20.0
 offset_top = 78.0
-offset_right = 250.0
-offset_bottom = 105.0
+offset_right = 360.0
+offset_bottom = 130.0
+theme_override_constants/separation = 4
+
+[node name="WeaponNameLabel" type="Label" parent="WeaponBox"]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 18
-text = "Arma: Pistola [1/2/3]"
+text = "Arma: Pistola"
+
+[node name="WeaponSlotsHBox" type="HBoxContainer" parent="WeaponBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Slot1" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot2" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot3" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot4" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot4"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot5" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot5"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot6" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot6"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot7" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot7"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot8" type="PanelContainer" parent="WeaponBox/WeaponSlotsHBox"]
+custom_minimum_size = Vector2(26, 22)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeaponBox/WeaponSlotsHBox/Slot8"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "8"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Crosshair" type="CenterContainer" parent="." unique_id=1272378942]
 anchors_preset = 8
