@@ -2,6 +2,10 @@ extends CharacterBody3D
 
 signal died(enemy: Node)
 
+# Proyectil corto que dispara el Centinela. Subclases que cambien el arma
+# (ej. enemy_tank con melee) overriden do_attack y no usan esto.
+const PROJECTILE_SHORT_SCENE: PackedScene = preload("res://scenes/enemies/projectile_short.tscn")
+
 # === STATS ===
 var health = 3
 var max_health = 3  # subclases lo overridan tras super._ready()
@@ -13,9 +17,11 @@ var display_name = "Centinela"  # nombre mostrado en el HUD; subclases lo overri
 var speed = 2.5
 var chase_speed = 4.0
 var attack_damage = 1
-var attack_range = 2.0
+# Centinela ahora dispara a corta distancia. attack_range es el umbral de
+# entrada a ATTACK; subclases melee (ej. enemy_tank) lo bajan a ~2.0.
+var attack_range = 6.0
 var detect_range = 10.0
-var attack_cooldown = 1.0
+var attack_cooldown = 1.5
 var base_color = Color(0.8, 0.1, 0.1)
 
 # === PATRULLA ===
@@ -147,9 +153,28 @@ func do_attack(delta):
 	# Atacar si el cooldown terminó
 	if attack_timer <= 0:
 		attack_timer = attack_cooldown
-		print("¡ENEMIGO ATACA! Daño: ", attack_damage)
-		if player.has_method("take_damage"):
-			player.take_damage(attack_damage)
+		_perform_attack()
+
+# Acción del golpe. Default: dispara proyectil corto (Centinela).
+# Subclases melee (enemy_tank, enemy_fast) overriden para hacer player.take_damage.
+func _perform_attack() -> void:
+	shoot_projectile_short()
+
+func shoot_projectile_short() -> void:
+	if player == null:
+		return
+	var projectile: Area3D = PROJECTILE_SHORT_SCENE.instantiate()
+	get_tree().current_scene.add_child(projectile)
+	# Spawn ligeramente delante y a la altura del torso para no chocar consigo mismo.
+	var to_player_dir: Vector3 = (player.global_position - global_position).normalized()
+	var spawn_offset: Vector3 = to_player_dir * 1.0
+	spawn_offset.y = 0.8
+	projectile.global_position = global_position + spawn_offset
+	projectile.direction = (player.global_position - projectile.global_position).normalized()
+	projectile.shooter = self
+	projectile.damage = attack_damage
+	AudioManager.play_sfx_pitched("shot")
+	print("¡CENTINELA DISPARA!")
 
 func check_player_distance():
 	if player == null:
