@@ -35,9 +35,25 @@ func do_chase(_delta):
 	var direction = to_player.normalized()
 
 	if distance < preferred_distance * 0.7:
-		# Demasiado cerca: retroceder manteniendo la mira
-		velocity.x = -direction.x * chase_speed
-		velocity.z = -direction.z * chase_speed
+		# Demasiado cerca: intentar retroceder, pero sólo si hay piso atrás.
+		# Antes el Tirador se tiraba al vacío arrinconado contra el borde
+		# (task #4 Día 5). Raycast desde ~2u atrás + 0.5u arriba hacia
+		# Vector3.DOWN * 3u: si no encuentra piso, nos quedamos quietos
+		# disparando desde la posición actual.
+		var retreat_dir: Vector3 = -direction
+		var probe_pos: Vector3 = global_position + retreat_dir * 2.0 + Vector3.UP * 0.5
+		var probe_end: Vector3 = probe_pos + Vector3.DOWN * 3.0
+		var space_state: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+		var probe_query := PhysicsRayQueryParameters3D.create(probe_pos, probe_end)
+		probe_query.exclude = [self.get_rid()]
+		var ground_check: Dictionary = space_state.intersect_ray(probe_query)
+		if ground_check:
+			velocity.x = retreat_dir.x * chase_speed
+			velocity.z = retreat_dir.z * chase_speed
+		else:
+			# Sin piso atrás: quedarse parado y disparar igual desde acá.
+			velocity.x = 0
+			velocity.z = 0
 	else:
 		velocity.x = direction.x * chase_speed
 		velocity.z = direction.z * chase_speed
