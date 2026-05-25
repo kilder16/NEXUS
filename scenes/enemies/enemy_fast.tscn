@@ -10,6 +10,9 @@ albedo_color = Color(1, 1, 0, 1)
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_iifgy"]
 material = SubResource("StandardMaterial3D_qi2p4")
 
+[sub_resource type="SphereShape3D" id="HeadShape"]
+radius = 0.35
+
 [node name="Enemy" type="CharacterBody3D" unique_id=1718832985]
 script = ExtResource("1_nc6d8")
 
@@ -18,3 +21,9 @@ shape = SubResource("CapsuleShape3D_4gyqm")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1056953485]
 mesh = SubResource("CapsuleMesh_iifgy")
+
+[node name="HeadHitbox" type="Area3D" parent="." groups=["head_hitbox"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
+shape = SubResource("HeadShape")

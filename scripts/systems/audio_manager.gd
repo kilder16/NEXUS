@@ -72,6 +72,7 @@ func _setup_streams() -> void:
 	_sfx_streams["explosion"] = _ensure_stream(SFX_DIR + "explosion.wav", _gen_explosion)
 	_sfx_streams["hitmarker_tick"] = _ensure_stream(SFX_DIR + "hitmarker_tick.wav", _gen_hitmarker_tick)
 	_sfx_streams["double_jump"] = _ensure_stream(SFX_DIR + "double_jump.wav", _gen_double_jump)
+	_sfx_streams["headshot_ding"] = _ensure_stream(SFX_DIR + "headshot_ding.wav", _gen_headshot_ding)
 	_sfx_streams["stab"] = _ensure_stream(SFX_DIR + "stab.wav", _gen_stab)
 	_sfx_streams["chop"] = _ensure_stream(SFX_DIR + "chop.wav", _gen_chop)
 	# saw_motor: stream loopeable. El importador de WAV de Godot descarta
@@ -413,6 +414,22 @@ func _gen_stab() -> AudioStreamWAV:
 		var tonal: float = sin(TAU * 1400.0 * t) * _env_ad(t, 0.001, 0.020)
 		var s: float = noise * env_n * 0.6 + tonal * 0.3
 		_write_sample(data, i, s * 0.85)
+	return _build_stream(data, sr)
+
+func _gen_headshot_ding() -> AudioStreamWAV:
+	# Ding agudo con "ring" para headshot. Tonal principal 3500 Hz + segunda
+	# armónica 5250 Hz, decay ~120 ms (más largo que hitmarker_tick para
+	# que se distinga claro como "premium feedback").
+	var sr := 44100
+	var dur := 0.12
+	var n := int(sr * dur)
+	var data := PackedByteArray()
+	data.resize(n * 2)
+	for i in range(n):
+		var t: float = float(i) / sr
+		var s: float = sin(TAU * 3500.0 * t) * _env_ad(t, 0.001, 0.060) * 0.55
+		s += sin(TAU * 5250.0 * t) * _env_ad(t, 0.001, 0.040) * 0.18
+		_write_sample(data, i, s)
 	return _build_stream(data, sr)
 
 func _gen_double_jump() -> AudioStreamWAV:

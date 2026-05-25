@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://b4yd8ktdavv5d"]
+[gd_scene load_steps=8 format=3 uid="uid://b4yd8ktdavv5d"]
 
 [ext_resource type="Script" uid="uid://qm3jg1rlphju" path="res://scripts/ai/enemy_tank.gd" id="2_cnr0l"]
 
@@ -25,6 +25,9 @@ height = 1.9
 radial_segments = 24
 rings = 12
 
+[sub_resource type="SphereShape3D" id="HeadShape"]
+radius = 0.35
+
 [node name="Enemy" type="CharacterBody3D" unique_id=1718832985]
 script = ExtResource("2_cnr0l")
 
@@ -33,6 +36,12 @@ shape = SubResource("CapsuleShape3D_4gyqm")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1056953485]
 mesh = SubResource("CapsuleMesh_iifgy")
+
+[node name="HeadHitbox" type="Area3D" parent="." groups=["head_hitbox"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
+shape = SubResource("HeadShape")
 
 [node name="ShieldVisual" type="Node3D" parent="."]
 

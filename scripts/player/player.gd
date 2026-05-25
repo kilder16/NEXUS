@@ -276,30 +276,70 @@ func _fire_hitscan(w: Weapon) -> void:
 			forward = forward.rotated(cam_x, sy).rotated(cam_y, sx).normalized()
 
 		var to_pos = origin + forward * w.max_range
-		var query = PhysicsRayQueryParameters3D.create(origin, to_pos)
-		query.exclude = [self.get_rid()]
-		var result = space_state.intersect_ray(query)
+
+		# DOS raycasts independientes:
+		# - body_query: solo bodies (CharacterBody3D del enemy / muros).
+		# - head_query: solo areas, filtrado por grupo "head_hitbox".
+		# El HeadHitbox vive DENTRO de la cápsula del enemy; con un solo
+		# raycast a "bodies+areas" la cápsula gana siempre. Separando en
+		# dos rays y comparando distancias detectamos headshot limpio
+		# cuando head_dist <= body_dist sobre el mismo path.
+		var body_query = PhysicsRayQueryParameters3D.create(origin, to_pos)
+		body_query.exclude = [self.get_rid()]
+		body_query.collide_with_bodies = true
+		body_query.collide_with_areas = false
+		var body_result: Dictionary = space_state.intersect_ray(body_query)
+
+		var head_query = PhysicsRayQueryParameters3D.create(origin, to_pos)
+		head_query.collide_with_bodies = false
+		head_query.collide_with_areas = true
+		var head_result: Dictionary = space_state.intersect_ray(head_query)
+
+		# Lógica de headshot: el HeadHitbox está DENTRO de la cápsula del enemy,
+		# así que con un ray horizontal el body ray entra ANTES que el head ray
+		# (cápsula radius > sphere radius desde fuera). Por eso no comparamos
+		# distancias: es headshot cuando el head_result y el body_result son del
+		# MISMO enemy (el ray atraviesa el cuerpo Y la zona de la cabeza).
+		var is_headshot: bool = false
+		var hit_result: Dictionary = {}
+		var damage_target: Node = null
+		if body_result:
+			damage_target = body_result.collider
+			hit_result = body_result
+			if head_result and head_result.collider.is_in_group("head_hitbox"):
+				var head_owner: Node = head_result.collider.get_parent()
+				if head_owner == damage_target:
+					is_headshot = true
+					hit_result = head_result  # blood en la cabeza, no en el torso
+		elif head_result and head_result.collider.is_in_group("head_hitbox"):
+			# El body ray no pegó pero el head ray sí (HeadHitbox sobresaliendo,
+			# o ray que pasa por encima del cuerpo). También cuenta como headshot.
+			is_headshot = true
+			hit_result = head_result
+			damage_target = head_result.collider.get_parent()
+
 		if debug_shooting:
 			print("[shoot] arma=", w.weapon_name, " pellet=", _i,
 					" from=", origin, " to=", to_pos,
-					" hit=", result.get("collider", null))
-		if result:
-			var target = result.collider
-			if target and target.has_method("take_damage"):
-				if debug_shooting:
-					print("[shoot]   -> take_damage(", w.damage, ") en ", target.name)
-				target.take_damage(w.damage)
-				ParticleManager.spawn_blood(result.position)
-				# Hitmarker + tick agudo confirman el impacto al jugador.
-				# Sólo dispara una vez por escopetazo aunque varios pellets peguen
-				# (cada pellet llama acá, pero show_hitmarker matiene el tween).
-				if target.is_in_group("enemy"):
-					# Hitmarker visual diferido a v1.2 (HUD CanvasLayer no
-					# renderiza Controls hijos nuevos por root cause sin
-					# diagnosticar). El SFX cubre el feedback auditivo.
+					" hit=", damage_target,
+					" headshot=", is_headshot)
+
+		if hit_result.is_empty():
+			continue
+		if damage_target and damage_target.has_method("take_damage"):
+			var final_damage: int = w.damage * 2 if is_headshot else w.damage
+			if debug_shooting:
+				print("[shoot]   -> take_damage(", final_damage, ") en ", damage_target.name, " headshot=", is_headshot)
+			damage_target.take_damage(final_damage)
+			ParticleManager.spawn_blood(hit_result.position)
+			if damage_target.is_in_group("enemy"):
+				if is_headshot:
+					AudioManager.play_sfx("headshot_ding")
+				else:
+					# Hitmarker visual diferido a v1.2; el SFX cubre el feedback.
 					AudioManager.play_sfx("hitmarker_tick")
-			else:
-				ParticleManager.spawn_impact(result.position, result.normal, "wall")
+		else:
+			ParticleManager.spawn_impact(hit_result.position, hit_result.normal, "wall")
 
 func _throw_grenade(_w: Weapon) -> void:
 	var grenade: RigidBody3D = GRENADE_SCENE.instantiate()
