@@ -35,7 +35,7 @@ func _perform_attack() -> void:
 		return
 	print("¡BASTIÓN GOLPEA! Daño: ", attack_damage)
 	if player.has_method("take_damage"):
-		player.take_damage(attack_damage)
+		player.take_damage(attack_damage, global_position)
 
 func _on_shield_broken() -> void:
 	if _shield_visual:

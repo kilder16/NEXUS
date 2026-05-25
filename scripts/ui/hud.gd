@@ -12,6 +12,19 @@ extends CanvasLayer
 @onready var crosshair = $Crosshair
 @onready var message_label = $MessageLabel
 
+# Damage indicator direccional: 4 ColorRect estáticos pegados a los bordes
+# del HUD. Cada barra se activa cuando el atacante está predominantemente
+# en esa dirección relativa al frente del player. Sin rotación (el bug del
+# HUD CanvasLayer descartó la flecha rotable, diferida a v1.2).
+enum DamageDir { LEFT, RIGHT, TOP, BOTTOM }
+@onready var damage_edge_left: ColorRect = $DamageEdgeLeft
+@onready var damage_edge_right: ColorRect = $DamageEdgeRight
+@onready var damage_edge_top: ColorRect = $DamageEdgeTop
+@onready var damage_edge_bottom: ColorRect = $DamageEdgeBottom
+# Tween activo por edge. Se cancela y reinicia si llega otro hit antes
+# de que termine el fade (evita acumulación de tweens).
+var _damage_edge_tweens: Dictionary = {}
+
 # Cantidad fija de slots de arma en el HUD (1..8). Coordinar con player.gd.
 const WEAPON_SLOT_COUNT: int = 8
 
@@ -157,6 +170,30 @@ func update_weapon(weapon_name: String, current_index: int = 0, total_weapons: i
 				lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.3, 1))
 			else:
 				lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4, 1))
+
+func show_damage_indicator(direction: int) -> void:
+	# Fade rojo del edge correspondiente: alpha 0.6 → 0 en 1s. Si el mismo
+	# edge ya está animándose por un hit previo, killeamos su tween y
+	# arrancamos de nuevo desde 0.6 (sensación de "más golpes = más alerta").
+	var edge: ColorRect = null
+	match direction:
+		DamageDir.LEFT:
+			edge = damage_edge_left
+		DamageDir.RIGHT:
+			edge = damage_edge_right
+		DamageDir.TOP:
+			edge = damage_edge_top
+		DamageDir.BOTTOM:
+			edge = damage_edge_bottom
+	if edge == null:
+		return
+	var prev: Tween = _damage_edge_tweens.get(edge)
+	if prev and prev.is_valid():
+		prev.kill()
+	edge.modulate.a = 0.6
+	var t: Tween = create_tween()
+	t.tween_property(edge, "modulate:a", 0.0, 1.0)
+	_damage_edge_tweens[edge] = t
 
 func show_hitmarker(_color: Color = Color(1, 0.9, 0.2, 1)) -> void:
 	# Hitmarker visual diferido a v1.2. El SFX "hitmarker_tick" en

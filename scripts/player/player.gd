@@ -363,7 +363,7 @@ func place_block(pos: Vector3):
 	block.block_type = current_block_type
 	get_tree().current_scene.add_child(block)
 
-func take_damage(amount: int):
+func take_damage(amount: int, attacker_position: Vector3 = Vector3.INF):
 	if is_dead:
 		return
 	AudioManager.play_sfx("hit", 0.0, 0.9)
@@ -374,6 +374,27 @@ func take_damage(amount: int):
 
 	if hud:
 		hud.show_message("¡DAÑO!", 0.3)
+
+	# Damage indicator direccional. Si el caller pasó attacker_position,
+	# convertimos al espacio LOCAL del player (eje X local = derecha,
+	# +Z local = atrás porque -Z es "forward" en Godot) y discretizamos
+	# al eje dominante.
+	if attacker_position != Vector3.INF and hud and hud.has_method("show_damage_indicator"):
+		var to_attacker: Vector3 = attacker_position - global_position
+		to_attacker.y = 0
+		if to_attacker.length_squared() > 0.001:
+			var local_x: float = transform.basis.x.dot(to_attacker)
+			var local_z: float = transform.basis.z.dot(to_attacker)
+			if abs(local_z) > abs(local_x):
+				if local_z > 0:
+					hud.show_damage_indicator(hud.DamageDir.BOTTOM)
+				else:
+					hud.show_damage_indicator(hud.DamageDir.TOP)
+			else:
+				if local_x > 0:
+					hud.show_damage_indicator(hud.DamageDir.RIGHT)
+				else:
+					hud.show_damage_indicator(hud.DamageDir.LEFT)
 
 	if health <= 0:
 		die()

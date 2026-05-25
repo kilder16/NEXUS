@@ -33,5 +33,7 @@ func _on_body_entered(body):
 	if body == shooter:
 		return
 	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(damage)
+		# Pasar la posición del shooter para el damage indicator (Feature 4.3).
+		var origin: Vector3 = shooter.global_position if shooter else global_position
+		body.take_damage(damage, origin)
 	queue_free()

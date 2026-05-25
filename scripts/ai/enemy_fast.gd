@@ -23,4 +23,4 @@ func _perform_attack() -> void:
 		return
 	print("¡ASALTANTE GOLPEA! Daño: ", attack_damage)
 	if player.has_method("take_damage"):
-		player.take_damage(attack_damage)
+		player.take_damage(attack_damage, global_position)
