@@ -5,6 +5,10 @@ signal died(enemy: Node)
 # === STATS ===
 var health = 3
 var max_health = 3  # subclases lo overridan tras super._ready()
+# Escudo opcional. Si max_shield > 0, take_damage descuenta de shield antes que de health.
+# Cuando shield llega a 0, se invoca _on_shield_broken() (hook para subclases).
+var shield: int = 0
+var max_shield: int = 0
 var display_name = "Centinela"  # nombre mostrado en el HUD; subclases lo overridan
 var speed = 2.5
 var chase_speed = 4.0
@@ -169,14 +173,37 @@ func take_damage(amount: int = 1):
 	if current_state == State.DEAD:
 		return
 	AudioManager.play_sfx_pitched("hit")
+
+	# El escudo absorbe daño antes que el HP. Daño residual (si overflow)
+	# pasa al HP en el mismo golpe.
+	if shield > 0:
+		var absorbed: int = min(amount, shield)
+		shield -= absorbed
+		amount -= absorbed
+		if shield <= 0:
+			shield = 0
+			_on_shield_broken()
+		else:
+			_on_shield_hit()
+		if amount <= 0:
+			return
+
 	health -= amount
 	print("Enemigo recibió daño (", amount, "). Vida: ", health)
-	
+
 	if health <= 0:
 		die()
 	else:
 		# Flashear rojo al recibir daño
 		flash_damage()
+
+# Hooks de escudo. Subclases con escudo (ej. enemy_tank) los overriden para
+# disparar VFX/SFX. La base no hace nada.
+func _on_shield_hit() -> void:
+	pass
+
+func _on_shield_broken() -> void:
+	pass
 
 func flash_damage():
 	var mesh = $MeshInstance3D

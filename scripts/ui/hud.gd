@@ -13,6 +13,8 @@ extends CanvasLayer
 # Indicador de salud de enemigos (aparece cuando el player apunta a uno)
 @onready var enemy_indicator: Control = $EnemyHealthIndicator
 @onready var enemy_name_label: Label = $EnemyHealthIndicator/VBox/NameLabel
+@onready var enemy_shield_box: Panel = $EnemyHealthIndicator/VBox/ShieldBarBox
+@onready var enemy_shield_fill: ColorRect = $EnemyHealthIndicator/VBox/ShieldBarBox/ShieldBarFill
 @onready var enemy_bar_fill: ColorRect = $EnemyHealthIndicator/VBox/BarBox/BarFill
 @onready var enemy_hp_label: Label = $EnemyHealthIndicator/VBox/HPLabel
 
@@ -76,10 +78,23 @@ func update_enemy_indicator(enemy) -> void:
 		enemy_indicator_target_alpha = 0.0
 		return
 	enemy_indicator_target_alpha = 1.0
+	# Texto: si tiene escudo activo, se muestra "S:X/Y  H:A/B" para tener
+	# referencia numérica además de las barras. Sin escudo, sólo HP.
+	var has_shield: bool = enemy.max_shield > 0 and enemy.shield > 0
 	if enemy_name_label:
 		enemy_name_label.text = enemy.display_name
 	if enemy_hp_label:
-		enemy_hp_label.text = "%d / %d" % [enemy.health, enemy.max_health]
+		if has_shield:
+			enemy_hp_label.text = "Escudo %d/%d  ·  Vida %d/%d" % [enemy.shield, enemy.max_shield, enemy.health, enemy.max_health]
+		else:
+			enemy_hp_label.text = "%d / %d" % [enemy.health, enemy.max_health]
+	# Barra de escudo (cyan): visible sólo mientras shield > 0.
+	if enemy_shield_box:
+		enemy_shield_box.visible = has_shield
+	if enemy_shield_fill and has_shield:
+		var s_ratio: float = float(enemy.shield) / float(max(1, enemy.max_shield))
+		enemy_shield_fill.anchor_right = clamp(s_ratio, 0.0, 1.0)
+	# Barra de HP (verde/amarillo/rojo según ratio).
 	var ratio: float = float(enemy.health) / float(max(1, enemy.max_health))
 	if enemy_bar_fill:
 		enemy_bar_fill.anchor_right = clamp(ratio, 0.0, 1.0)

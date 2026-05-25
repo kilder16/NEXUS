@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b4yd8ktdavv5d"]
+[gd_scene load_steps=7 format=3 uid="uid://b4yd8ktdavv5d"]
 
 [ext_resource type="Script" uid="uid://qm3jg1rlphju" path="res://scripts/ai/enemy_tank.gd" id="2_cnr0l"]
 
@@ -10,6 +10,21 @@ albedo_color = Color(0, 0, 0.5019608, 1)
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_iifgy"]
 material = SubResource("StandardMaterial3D_qi2p4")
 
+[sub_resource type="StandardMaterial3D" id="ShieldAuraMat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0.866, 1, 0.18)
+emission_enabled = true
+emission = Color(0, 0.866, 1, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="SphereMesh" id="ShieldAuraMesh"]
+material = SubResource("ShieldAuraMat")
+radius = 0.95
+height = 1.9
+radial_segments = 24
+rings = 12
+
 [node name="Enemy" type="CharacterBody3D" unique_id=1718832985]
 script = ExtResource("2_cnr0l")
 
@@ -18,3 +33,13 @@ shape = SubResource("CapsuleShape3D_4gyqm")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1056953485]
 mesh = SubResource("CapsuleMesh_iifgy")
+
+[node name="ShieldVisual" type="Node3D" parent="."]
+
+[node name="AuraMesh" type="MeshInstance3D" parent="ShieldVisual"]
+mesh = SubResource("ShieldAuraMesh")
+
+[node name="AuraLight" type="OmniLight3D" parent="ShieldVisual"]
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 0.8
+omni_range = 2.5

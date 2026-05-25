@@ -34,11 +34,15 @@ func _ready() -> void:
 	# Override boss HP tras el _ready de enemy_tank (default = 8 post-balance).
 	# max_health y display_name también deben sincronizarse para que el
 	# indicador del HUD muestre "50 / 50" y el nombre correcto del boss.
+	# Shield del boss también overrideado a 15 (default Bastión = 4): el boss
+	# está explícitamente más blindado que un Bastión normal.
 	await get_tree().process_frame
 	boss.health = 50
 	boss.max_health = 50
+	boss.shield = 15
+	boss.max_shield = 15
 	boss.display_name = "JEFE: NÚCLEO"
-	print("[Level05] Boss HP override: ", boss.health)
+	print("[Level05] Boss HP override: ", boss.health, " Shield: ", boss.shield)
 
 func _on_enemy_died(_e: Node) -> void:
 	enemies_killed += 1
