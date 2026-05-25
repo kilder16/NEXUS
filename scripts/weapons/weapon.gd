@@ -28,6 +28,12 @@ var type: String
 var sfx_name: String = ""
 var vfx_color: Color = Color(1, 1, 1, 1)
 
+# Recoil (sólo aplica a hitscan). recoil_amount en radianes; cero = sin
+# recoil. recoil_recovery_time en segundos para llegar al ~5% del offset
+# acumulado (player.gd convierte a velocidad de lerp).
+var recoil_amount: float = 0.0
+var recoil_recovery_time: float = 0.3
+
 func _init(
 	p_name: String,
 	p_damage: int,

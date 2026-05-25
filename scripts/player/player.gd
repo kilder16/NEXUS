@@ -14,6 +14,13 @@ var has_double_jumped: bool = false
 var _space_held_prev: bool = false
 const DOUBLE_JUMP_VELOCITY_FACTOR: float = 0.9
 
+# Recoil acumulado: magnitud positiva en radianes que indica cuánto la
+# cámara está "extra arriba" respecto a la rotation que setea el mouse.
+# Decae cada frame en _physics_process aplicando un delta proporcional
+# a camera.rotation.x (la baja). Sólo aplica a hitscan.
+var _recoil_offset: float = 0.0
+var _recoil_recovery_speed: float = 10.0  # se actualiza por arma al disparar
+
 # === VIDA ===
 var max_health = 10
 var health = 10
@@ -103,10 +110,19 @@ func _ready():
 		hud.show_message("Llega al objetivo verde", 3.0)
 
 func setup_weapons():
+	var pistol: Weapon = Weapon.new("Pistola", 1, 0.2, 50.0)
+	pistol.recoil_amount = deg_to_rad(0.5)
+	pistol.recoil_recovery_time = 0.3
+	var shotgun: Weapon = Weapon.new("Escopeta", 3, 0.8, 10.0, 0.12, 6)
+	shotgun.recoil_amount = deg_to_rad(2.0)
+	shotgun.recoil_recovery_time = 0.5
+	var rifle: Weapon = Weapon.new("Rifle", 2, 0.4, 100.0)
+	rifle.recoil_amount = deg_to_rad(1.0)
+	rifle.recoil_recovery_time = 0.4
 	weapons = [
-		Weapon.new("Pistola", 1, 0.2, 50.0),
-		Weapon.new("Escopeta", 3, 0.8, 10.0, 0.12, 6),
-		Weapon.new("Rifle", 2, 0.4, 100.0),
+		pistol,
+		shotgun,
+		rifle,
 		# Slot 4: Granada. fire_rate 2.0s (cooldown entre lanzamientos),
 		# max_ammo 3 (se resetea naturalmente en cada nivel vía _ready).
 		Weapon.new("Granada", 0, 2.0, 0.0, 0.0, 1, 3, "grenade"),
@@ -236,6 +252,15 @@ func _fire_hitscan(w: Weapon) -> void:
 		camera.global_position - camera.global_transform.basis.z * 0.5,
 		-camera.global_transform.basis.z
 	)
+
+	# Recoil: aplica un pitch-up inmediato y registra el offset acumulado
+	# para que _physics_process lo decaiga gradualmente hasta 0.
+	if w.recoil_amount > 0.0:
+		_recoil_offset += w.recoil_amount
+		camera.rotation.x = clamp(camera.rotation.x - w.recoil_amount, -1.5, 1.5)
+		# Speed que lleva el offset al ~5% en recoil_recovery_time segundos
+		# (matemática: e^-3 ≈ 0.05, así que speed = 3 / time).
+		_recoil_recovery_speed = 3.0 / max(0.05, w.recoil_recovery_time)
 
 	var space_state = get_world_3d().direct_space_state
 	var origin: Vector3 = camera.global_position
@@ -436,6 +461,17 @@ func die():
 func _physics_process(delta):
 	if shoot_cooldown > 0.0:
 		shoot_cooldown -= delta
+
+	# Recoil decay: bajamos _recoil_offset hacia 0 con velocidad
+	# _recoil_recovery_speed (seteada por el arma al disparar). El delta
+	# del lerp se SUMA a camera.rotation.x para que la cámara baje
+	# proporcionalmente a lo que cae el offset. Esto no pisa el mouse:
+	# el mouse modifica rotation.x libremente, nosotros sólo ajustamos
+	# por el delta del recoil que se "descarga".
+	if _recoil_offset > 0.0001:
+		var prev_offset: float = _recoil_offset
+		_recoil_offset = lerp(_recoil_offset, 0.0, clamp(delta * _recoil_recovery_speed, 0.0, 1.0))
+		camera.rotation.x = clamp(camera.rotation.x + (prev_offset - _recoil_offset), -1.5, 1.5)
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
