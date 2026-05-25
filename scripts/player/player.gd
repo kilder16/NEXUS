@@ -41,6 +41,7 @@ var block_scene = preload("res://scenes/building/block.tscn")
 
 # Escenas de armas no-hitscan (granadas, cohetes, etc).
 const GRENADE_SCENE: PackedScene = preload("res://scenes/weapons/grenade.tscn")
+const ROCKET_SCENE: PackedScene = preload("res://scenes/weapons/rocket.tscn")
 # Parámetros de lanzamiento de granada (arco hacia donde apunta la cámara).
 const GRENADE_THROW_FORCE: float = 12.0
 const GRENADE_LIFT: float = 3.0
@@ -74,6 +75,9 @@ func setup_weapons():
 		# Slot 4: Granada. fire_rate 2.0s (cooldown entre lanzamientos),
 		# max_ammo 3 (se resetea naturalmente en cada nivel vía _ready).
 		Weapon.new("Granada", 0, 2.0, 0.0, 0.0, 1, 3, "grenade"),
+		# Slot 5: Bazuca. fire_rate 1.5s, max_ammo 2 (cohete pega más fuerte
+		# que la granada y es directo, así que es más limitada).
+		Weapon.new("Bazuca", 0, 1.5, 0.0, 0.0, 1, 2, "rocket"),
 	]
 
 func _input(event):
@@ -154,6 +158,8 @@ func shoot():
 			_fire_hitscan(w)
 		"grenade":
 			_throw_grenade(w)
+		"rocket":
+			_fire_rocket(w)
 		_:
 			push_warning("Tipo de arma no soportado todavía: " + w.type)
 			return
@@ -210,6 +216,16 @@ func _throw_grenade(_w: Weapon) -> void:
 	# Velocidad inicial: empuje hacia adelante + lift para que el arco
 	# sea visible en distancia media.
 	grenade.linear_velocity = forward * GRENADE_THROW_FORCE + Vector3.UP * GRENADE_LIFT
+	AudioManager.play_sfx_pitched("shot")
+
+func _fire_rocket(_w: Weapon) -> void:
+	var rocket: Area3D = ROCKET_SCENE.instantiate()
+	get_tree().current_scene.add_child(rocket)
+	# Spawn delante de la cámara y a la altura del cañón (~0.6u adelante).
+	var forward: Vector3 = -camera.global_transform.basis.z
+	rocket.global_position = camera.global_position + forward * 0.8
+	rocket.direction = forward
+	rocket.shooter = self
 	AudioManager.play_sfx_pitched("shot")
 
 func build():
