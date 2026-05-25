@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var block_label = $BlockLabel
 @onready var weapon_name_label: Label = $WeaponBox/WeaponNameLabel
 @onready var weapon_slots_hbox: HBoxContainer = $WeaponBox/WeaponSlotsHBox
+@onready var ammo_label: Label = $WeaponBox/AmmoLabel
 @onready var crosshair = $Crosshair
 @onready var message_label = $MessageLabel
 
@@ -116,6 +117,21 @@ func update_health(current_health: int, max_health: int):
 func update_block_type(block_type: int):
 	if block_label:
 		block_label.text = "Bloque: %s [Q/E]" % block_names[block_type]
+
+func update_ammo(current_ammo: int, max_ammo: int) -> void:
+	# max_ammo < 0 indica munición infinita: ocultamos el label entero.
+	if not ammo_label:
+		return
+	if max_ammo < 0:
+		ammo_label.visible = false
+		return
+	ammo_label.visible = true
+	ammo_label.text = "Munición: %d / %d" % [current_ammo, max_ammo]
+	# Rojo cuando está vacía para empujar al jugador a cambiar de arma.
+	if current_ammo <= 0:
+		ammo_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3, 1))
+	else:
+		ammo_label.add_theme_color_override("font_color", Color(1, 0.85, 0.3, 1))
 
 func update_weapon(weapon_name: String, current_index: int = 0, total_weapons: int = 1) -> void:
 	if weapon_name_label:

@@ -132,6 +132,14 @@ func shoot():
 		return
 
 	var w: Weapon = weapons[current_weapon_index]
+	# Munición limitada (granadas, bazuca): si no queda, "click" vacío y abortar.
+	if not w.has_ammo():
+		AudioManager.play_sfx("empty_click")
+		shoot_cooldown = 0.25  # pequeño debounce para que el click no spamme.
+		return
+	w.consume_ammo()
+	if w.has_limited_ammo():
+		update_hud()
 	shoot_cooldown = w.fire_rate
 	AudioManager.play_sfx_pitched("shot")
 	ParticleManager.spawn_muzzle_flash(
@@ -210,7 +218,9 @@ func update_hud():
 		hud.update_health(health, max_health)
 		hud.update_block_type(current_block_type)
 		if not weapons.is_empty():
-			hud.update_weapon(weapons[current_weapon_index].weapon_name, current_weapon_index, weapons.size())
+			var w: Weapon = weapons[current_weapon_index]
+			hud.update_weapon(w.weapon_name, current_weapon_index, weapons.size())
+			hud.update_ammo(w.ammo, w.max_ammo)
 
 func _update_enemy_indicator():
 	# Si el raycast (ya activo para build) está golpeando un enemigo dentro
