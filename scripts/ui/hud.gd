@@ -228,7 +228,10 @@ func show_hitmarker(color: Color = Color(1, 0.9, 0.2, 1)) -> void:
 	hitmarker.modulate = color
 	hitmarker.modulate.a = 1.0
 	_hitmarker_tween = create_tween()
-	_hitmarker_tween.tween_property(hitmarker, "modulate:a", 0.0, 0.25)
+	# Visible fijo 100ms + fade out 350ms = 450ms total. Suficiente para
+	# que el ojo registre el flash sin convertirlo en estorbo visual.
+	_hitmarker_tween.tween_interval(0.1)
+	_hitmarker_tween.tween_property(hitmarker, "modulate:a", 0.0, 0.35)
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:
