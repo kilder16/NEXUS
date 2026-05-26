@@ -479,7 +479,27 @@ func _update_enemy_indicator():
 	# el HUD se fade-out.
 	if not hud or not hud.has_method("update_enemy_indicator"):
 		return
+
+	# Alcance del raycast del aim: 2x max_range del arma activa (default
+	# 100u). El raycast es SOLO para feedback visual del crosshair y la
+	# barra de salud — el daño del disparo sigue limitado por w.max_range
+	# en _fire_hitscan, no se afecta.
+	var aim_ray_length: float = 100.0
+	if not weapons.is_empty():
+		var w_range: Weapon = weapons[current_weapon_index]
+		if w_range.max_range > 0.0:
+			aim_ray_length = w_range.max_range * 2.0
+	raycast.target_position = Vector3(0, 0, -aim_ray_length)
+	raycast.force_raycast_update()
+
+	# Dos buckets de "enemy apuntado":
+	# - aimed: con el filtro estricto de 40u, alimenta la barra de HP del
+	#   EnemyHealthIndicator (preservamos comportamiento original).
+	# - aimed_far: cualquier enemy en el raycast extendido, alimenta el
+	#   color del crosshair (para que amarillo/rojo se vean al borde y
+	#   fuera del max_range del arma).
 	var aimed: Node = null
+	var aimed_far: Node = null
 	var aim_distance: float = 0.0
 	if raycast.is_colliding():
 		var collider = raycast.get_collider()
@@ -487,6 +507,7 @@ func _update_enemy_indicator():
 			aim_distance = camera.global_position.distance_to(raycast.get_collision_point())
 			if aim_distance <= enemy_indicator_max_distance:
 				aimed = collider
+			aimed_far = collider
 	hud.update_enemy_indicator(aimed)
 
 	# Indicador de alcance del crosshair: verde si el enemy apuntado está
@@ -495,7 +516,7 @@ func _update_enemy_indicator():
 	# (granada/bazuca tienen radio en vez de rango lineal; no aplica).
 	if hud.has_method("set_crosshair_color"):
 		var color: Color = Color(1, 1, 1, 1)  # default blanco
-		if aimed != null and not weapons.is_empty():
+		if aimed_far != null and not weapons.is_empty():
 			var w: Weapon = weapons[current_weapon_index]
 			if w.type != "grenade" and w.type != "rocket" and w.max_range > 0.0:
 				var ratio: float = aim_distance / w.max_range
