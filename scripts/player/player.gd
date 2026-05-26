@@ -335,12 +335,8 @@ func _fire_hitscan(w: Weapon) -> void:
 			if damage_target.is_in_group("enemy"):
 				if is_headshot:
 					AudioManager.play_sfx("headshot_ding")
-					if hud and hud.has_method("show_hitmarker"):
-						hud.show_hitmarker(Color(1, 0.3, 0.3, 1))  # rojo headshot
 				else:
 					AudioManager.play_sfx("hitmarker_tick")
-					if hud and hud.has_method("show_hitmarker"):
-						hud.show_hitmarker(Color(1, 0.9, 0.2, 1))  # amarillo default
 		else:
 			ParticleManager.spawn_impact(hit_result.position, hit_result.normal, "wall")
 
@@ -530,6 +526,11 @@ func _update_enemy_indicator():
 				else:
 					color = Color(1.0, 0.3, 0.3, 1)  # rojo
 		hud.set_crosshair_color(color)
+
+	# Target indicator estilo Predator: visible mientras el raycast
+	# detecta un enemy (cualquier distancia dentro del aim_ray_length).
+	if hud.has_method("set_target_locked"):
+		hud.set_target_locked(aimed_far != null)
 
 func die():
 	if is_dead:

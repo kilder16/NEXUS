@@ -11,12 +11,14 @@ extends CanvasLayer
 @onready var ammo_label: Label = $WeaponBox/AmmoLabel
 @onready var crosshair = $Crosshair
 @onready var crosshair_label: Label = $Crosshair/Label
-@onready var hitmarker: Control = $HitmarkerContainer/Hitmarker
+@onready var target_indicator: Control = $TargetIndicatorContainer/TargetIndicator
 @onready var message_label = $MessageLabel
 
-# Tween activo del hitmarker. Lo guardamos para cancelarlo si llega un nuevo
-# hit antes de que termine el fade del anterior (evita acumulación).
-var _hitmarker_tween: Tween = null
+# Target indicator estilo Predator: triángulo rojo (▼) sobre el crosshair
+# que aparece mientras el raycast detecta un enemy y desaparece al perderlo.
+# Driven desde player.gd::_update_enemy_indicator (cada frame).
+var _target_visible: bool = false
+var _target_tween: Tween = null
 
 # Damage indicator direccional: 4 ColorRect estáticos pegados a los bordes
 # del HUD. Cada barra se activa cuando el atacante está predominantemente
@@ -213,25 +215,27 @@ func set_crosshair_color(color: Color) -> void:
 	if crosshair_label:
 		crosshair_label.modulate = color
 
-func show_hitmarker(color: Color = Color(1, 0.9, 0.2, 1)) -> void:
-	# Hitmarker visual: 4 Labels unicode (╲ ╱ ╱ ╲) en las 4 esquinas del
-	# Control "Hitmarker", fade del modulate del padre de 1 → 0 en 250ms.
-	# Approach elegido para esquivar las técnicas que fallaron en el HUD
-	# CanvasLayer durante Día 4 (_draw() custom y Controls con rotation
-	# no renderizan). Labels estáticos + modulate + Tween están todos
-	# validados en este HUD (crosshair de colores, damage indicator).
-	# Color amarillo default; 4.5 lo va a llamar con rojo en headshot.
-	if not hitmarker:
+func set_target_locked(locked: bool) -> void:
+	# Target indicator estilo Predator: fade-in 150ms cuando el raycast
+	# del aim detecta un enemy, fade-out 150ms al perderlo. Idempotente
+	# vía _target_visible (evita reiniciar el tween cada frame mientras
+	# el state no cambia).
+	if not target_indicator:
 		return
-	if _hitmarker_tween and _hitmarker_tween.is_valid():
-		_hitmarker_tween.kill()
-	hitmarker.modulate = color
-	hitmarker.modulate.a = 1.0
-	_hitmarker_tween = create_tween()
-	# Visible fijo 100ms + fade out 350ms = 450ms total. Suficiente para
-	# que el ojo registre el flash sin convertirlo en estorbo visual.
-	_hitmarker_tween.tween_interval(0.1)
-	_hitmarker_tween.tween_property(hitmarker, "modulate:a", 0.0, 0.35)
+	if locked == _target_visible:
+		return
+	_target_visible = locked
+	if _target_tween and _target_tween.is_valid():
+		_target_tween.kill()
+	_target_tween = create_tween()
+	var target_alpha: float = 1.0 if locked else 0.0
+	_target_tween.tween_property(target_indicator, "modulate:a", target_alpha, 0.15)
+
+func show_hitmarker(_color: Color = Color(1, 0.9, 0.2, 1)) -> void:
+	# Reemplazado por set_target_locked (driven cada frame desde
+	# _update_enemy_indicator). Queda como stub vacío para que las
+	# llamadas legacy en player.gd no rompan si quedan referencias.
+	pass
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:
