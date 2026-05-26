@@ -480,13 +480,32 @@ func _update_enemy_indicator():
 	if not hud or not hud.has_method("update_enemy_indicator"):
 		return
 	var aimed: Node = null
+	var aim_distance: float = 0.0
 	if raycast.is_colliding():
 		var collider = raycast.get_collider()
 		if collider and collider.is_in_group("enemy"):
-			var distance: float = camera.global_position.distance_to(raycast.get_collision_point())
-			if distance <= enemy_indicator_max_distance:
+			aim_distance = camera.global_position.distance_to(raycast.get_collision_point())
+			if aim_distance <= enemy_indicator_max_distance:
 				aimed = collider
 	hud.update_enemy_indicator(aimed)
+
+	# Indicador de alcance del crosshair: verde si el enemy apuntado está
+	# bien dentro del rango del arma, amarillo si está al borde, rojo si
+	# está fuera. Blanco cuando no hay enemy o el arma es explosiva
+	# (granada/bazuca tienen radio en vez de rango lineal; no aplica).
+	if hud.has_method("set_crosshair_color"):
+		var color: Color = Color(1, 1, 1, 1)  # default blanco
+		if aimed != null and not weapons.is_empty():
+			var w: Weapon = weapons[current_weapon_index]
+			if w.type != "grenade" and w.type != "rocket" and w.max_range > 0.0:
+				var ratio: float = aim_distance / w.max_range
+				if ratio <= 0.8:
+					color = Color(0.2, 1.0, 0.2, 1)  # verde
+				elif ratio <= 1.0:
+					color = Color(1.0, 1.0, 0.2, 1)  # amarillo
+				else:
+					color = Color(1.0, 0.3, 0.3, 1)  # rojo
+		hud.set_crosshair_color(color)
 
 func die():
 	if is_dead:

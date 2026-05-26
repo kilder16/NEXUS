@@ -10,6 +10,7 @@ extends CanvasLayer
 @onready var weapon_slots_hbox: HBoxContainer = $WeaponBox/WeaponSlotsHBox
 @onready var ammo_label: Label = $WeaponBox/AmmoLabel
 @onready var crosshair = $Crosshair
+@onready var crosshair_label: Label = $Crosshair/Label
 @onready var message_label = $MessageLabel
 
 # Damage indicator direccional: 4 ColorRect estáticos pegados a los bordes
@@ -194,6 +195,18 @@ func show_damage_indicator(direction: int) -> void:
 	var t: Tween = create_tween()
 	t.tween_property(edge, "modulate:a", 0.0, 1.0)
 	_damage_edge_tweens[edge] = t
+
+func set_crosshair_color(color: Color) -> void:
+	# Tinta el "+" del crosshair según el alcance del arma vs distancia al
+	# enemy apuntado. Driven desde player.gd::_update_enemy_indicator.
+	# Usamos modulate (etapa de render final, multiplica el color del
+	# Label) en vez de add_theme_color_override porque dentro del HUD
+	# CanvasLayer el override del theme se pisa visualmente — mismo
+	# patrón que limita al hitmarker visual diferido a v1.2. El Label
+	# tiene font_color (1,1,1,1) en la escena para que la multiplicación
+	# de modulate dé exactamente el color pedido.
+	if crosshair_label:
+		crosshair_label.modulate = color
 
 func show_hitmarker(_color: Color = Color(1, 0.9, 0.2, 1)) -> void:
 	# Hitmarker visual diferido a v1.2. El SFX "hitmarker_tick" en
