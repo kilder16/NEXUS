@@ -11,7 +11,12 @@ extends CanvasLayer
 @onready var ammo_label: Label = $WeaponBox/AmmoLabel
 @onready var crosshair = $Crosshair
 @onready var crosshair_label: Label = $Crosshair/Label
+@onready var hitmarker: Control = $Hitmarker
 @onready var message_label = $MessageLabel
+
+# Tween activo del hitmarker. Lo guardamos para cancelarlo si llega un nuevo
+# hit antes de que termine el fade del anterior (evita acumulación).
+var _hitmarker_tween: Tween = null
 
 # Damage indicator direccional: 4 ColorRect estáticos pegados a los bordes
 # del HUD. Cada barra se activa cuando el atacante está predominantemente
@@ -208,14 +213,22 @@ func set_crosshair_color(color: Color) -> void:
 	if crosshair_label:
 		crosshair_label.modulate = color
 
-func show_hitmarker(_color: Color = Color(1, 0.9, 0.2, 1)) -> void:
-	# Hitmarker visual diferido a v1.2. El SFX "hitmarker_tick" en
-	# player.gd cubre el feedback auditivo (80% del valor del hitmarker).
-	# El indicador visual de chevrons fue problemático: tanto _draw()
-	# custom como ColorRect rotados pasaron el diagnóstico funcional
-	# pero no se renderizaron en pantalla. Probable root cause en el HUD
-	# CanvasLayer; a investigar en v1.2 con rediseño del HUD.
-	pass
+func show_hitmarker(color: Color = Color(1, 0.9, 0.2, 1)) -> void:
+	# Hitmarker visual: 4 Labels unicode (╲ ╱ ╱ ╲) en las 4 esquinas del
+	# Control "Hitmarker", fade del modulate del padre de 1 → 0 en 250ms.
+	# Approach elegido para esquivar las técnicas que fallaron en el HUD
+	# CanvasLayer durante Día 4 (_draw() custom y Controls con rotation
+	# no renderizan). Labels estáticos + modulate + Tween están todos
+	# validados en este HUD (crosshair de colores, damage indicator).
+	# Color amarillo default; 4.5 lo va a llamar con rojo en headshot.
+	if not hitmarker:
+		return
+	if _hitmarker_tween and _hitmarker_tween.is_valid():
+		_hitmarker_tween.kill()
+	hitmarker.modulate = color
+	hitmarker.modulate.a = 1.0
+	_hitmarker_tween = create_tween()
+	_hitmarker_tween.tween_property(hitmarker, "modulate:a", 0.0, 0.25)
 
 func show_message(text: String, duration: float = 2.0):
 	if message_label:
