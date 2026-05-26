@@ -11,7 +11,7 @@ extends CanvasLayer
 @onready var ammo_label: Label = $WeaponBox/AmmoLabel
 @onready var crosshair = $Crosshair
 @onready var crosshair_label: Label = $Crosshair/Label
-@onready var hitmarker: Control = $Hitmarker
+@onready var hitmarker: Control = $HitmarkerContainer/Hitmarker
 @onready var message_label = $MessageLabel
 
 # Tween activo del hitmarker. Lo guardamos para cancelarlo si llega un nuevo
