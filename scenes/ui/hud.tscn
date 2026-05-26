@@ -195,8 +195,6 @@ text = "+"
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -8.0
-offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -207,57 +205,45 @@ layout_mode = 2
 mouse_filter = 2
 modulate = Color(1, 1, 1, 0)
 
-[node name="TopLeft" type="Label" parent="HitmarkerContainer/Hitmarker"]
+[node name="ChevronTopLeft" type="ColorRect" parent="HitmarkerContainer/Hitmarker"]
 layout_mode = 1
 anchors_preset = 0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 22.0
+offset_bottom = 10.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
-text = "▼"
-horizontal_alignment = 1
-vertical_alignment = 1
+color = Color(1, 1, 1, 1)
 
-[node name="TopRight" type="Label" parent="HitmarkerContainer/Hitmarker"]
+[node name="ChevronTopRight" type="ColorRect" parent="HitmarkerContainer/Hitmarker"]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 40.0
-offset_right = 60.0
-offset_bottom = 20.0
+offset_left = 38.0
+offset_top = 6.0
+offset_right = 54.0
+offset_bottom = 10.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
-text = "▼"
-horizontal_alignment = 1
-vertical_alignment = 1
+color = Color(1, 1, 1, 1)
 
-[node name="BottomLeft" type="Label" parent="HitmarkerContainer/Hitmarker"]
+[node name="ChevronBottomLeft" type="ColorRect" parent="HitmarkerContainer/Hitmarker"]
 layout_mode = 1
 anchors_preset = 0
-offset_top = 40.0
-offset_right = 20.0
-offset_bottom = 60.0
+offset_left = 6.0
+offset_top = 50.0
+offset_right = 22.0
+offset_bottom = 54.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
-text = "▲"
-horizontal_alignment = 1
-vertical_alignment = 1
+color = Color(1, 1, 1, 1)
 
-[node name="BottomRight" type="Label" parent="HitmarkerContainer/Hitmarker"]
+[node name="ChevronBottomRight" type="ColorRect" parent="HitmarkerContainer/Hitmarker"]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 40.0
-offset_top = 40.0
-offset_right = 60.0
-offset_bottom = 60.0
+offset_left = 38.0
+offset_top = 50.0
+offset_right = 54.0
+offset_bottom = 54.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
-text = "▲"
-horizontal_alignment = 1
-vertical_alignment = 1
+color = Color(1, 1, 1, 1)
 
 [node name="EnemyHealthIndicator" type="Control" parent="."]
 layout_mode = 3
