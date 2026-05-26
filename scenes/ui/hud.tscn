@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://crfg22ec1i2cd" path="res://scripts/ui/hud.gd" id="1_0mwgc"]
 [ext_resource type="Shader" path="res://shaders/damage_vignette.gdshader" id="2_vignette"]
+[ext_resource type="Texture2D" uid="uid://duti0vsc3lsjy" path="res://assets/ui/predator_target.png" id="3_predator"]
 
 [sub_resource type="ShaderMaterial" id="vignette_mat"]
 shader = ExtResource("2_vignette")
@@ -184,9 +185,9 @@ mouse_filter = 2
 custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 mouse_filter = 2
-modulate = Color(1, 0.1, 0.1, 0)
+modulate = Color(1, 1, 1, 0)
 
-[node name="ArrowDown" type="Label" parent="TargetIndicatorContainer/TargetIndicator"]
+[node name="PredatorIcon" type="TextureRect" parent="TargetIndicatorContainer/TargetIndicator"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -194,11 +195,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 80
-text = "▼"
-horizontal_alignment = 1
-vertical_alignment = 1
+texture = ExtResource("3_predator")
+expand_mode = 1
+stretch_mode = 5
+flip_h = false
+flip_v = false
 
 [node name="Crosshair" type="CenterContainer" parent="." unique_id=1272378942]
 anchors_preset = 8
