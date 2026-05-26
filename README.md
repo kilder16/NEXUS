@@ -2,7 +2,7 @@
 
 > Infiltrate. Adapt. Disconnect The Core.
 
-![Version](https://img.shields.io/badge/version-1.0-blue)
+![Version](https://img.shields.io/badge/version-1.1-blue)
 ![Engine](https://img.shields.io/badge/Godot-4.6-478CBF?logo=godot-engine&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white)
 ![License](https://img.shields.io/badge/license-Proprietary-red)
@@ -35,6 +35,20 @@ NEXUS es un FPS táctico en primera persona con un sistema de construcción inte
 - **Pause menu + WinScreen con stats** — tiempo y enemigos eliminados al cerrar cada sector.
 - **Audio procedural** — SFX y música generados al primer launch, con pitch variation y fade dinámico.
 
+## Novedades v1.1
+
+- **Loadout extendido a 8 armas:** se suman **granada** (3/nivel, radio 5u), **bazuca** (2/nivel, radio 4u), **cuchillo** (rápido, daño 5), **hacha** (lento, daño 12) y **sierra eléctrica** (DPS continuo, 20/s).
+- **Enemigos diferenciados:**
+  - **Bastión** ahora trae **escudo destructible** (4 puntos) sobre su HP base. Aura cyan visible, VFX de ruptura al romper. Boss del Sector 05 escalado a escudo 15 + HP 50.
+  - **Centinela** dejó el melee y ahora dispara a corta distancia con **proyectil amarillo** (rango 6u, cooldown 1.5s; 2.5s en Sector 01 para no agobiar al inicio).
+- **Movimiento:** **doble salto** en el aire con SFX agudo y partículas blancas debajo.
+- **Gunplay polish:**
+  - **Recoil per-arma** (pistola 0.5°, rifle 1°, escopeta 2°) con recovery suave.
+  - **Headshots** con daño x2 + SFX "ding" agudo (rifle headshot = 4 daño, escopeta headshot por pellet).
+  - **SFX hitmarker** ("tick" agudo al impactar enemigo).
+  - **Damage indicator direccional:** 4 barras rojas en los bordes del HUD se activan cuando recibís daño desde izquierda/derecha/frente/atrás.
+- **Settings desde el menú de pausa** ahora abre como **overlay**, sin reiniciar el nivel ni perder progreso.
+
 ## Controles
 
 | Acción | Tecla |
@@ -45,16 +59,16 @@ NEXUS es un FPS táctico en primera persona con un sistema de construcción inte
 | Disparar / destruir | Clic izquierdo |
 | Construir bloque | Clic derecho |
 | Cambiar tipo de bloque | Q / E |
-| Cambiar arma | 1 / 2 / 3 |
+| Cambiar arma | 1..8 (según loadout disponible) |
 | Reiniciar nivel | R |
 | Pausa / menú | ESC |
 
 ## Cómo jugar
 
-Esta es la versión **v1.0**, primer release público.
+Esta es la versión **v1.1**, expansión de combate y polish sobre el v1.0 inicial.
 
 1. Descargá el `.exe` de la última versión desde **[Releases en GitHub](https://github.com/kilder16/NEXUS/releases)**.
-2. Extraé el zip y ejecutá `nexus.exe`.
+2. Extraé el zip y ejecutá `NEXUS_v1.1.exe`.
 3. Plataforma soportada: **Windows 10 / 11 (64-bit)**.
 
 El primer lanzamiento genera archivos de audio procedurales (~2–3 segundos); los lanzamientos siguientes cargan de disco.
@@ -65,14 +79,14 @@ El primer lanzamiento genera archivos de audio procedurales (~2–3 segundos); l
 - **GDScript** — toda la lógica de gameplay.
 - **Jolt Physics** — motor de física 3D.
 
-## Roadmap v1.1
+## Roadmap v1.2
 
 Planeado, sin fecha confirmada:
 
-- **Enemigos diferenciados con armas a distancia**
-  - Centinela con arma corta.
-  - Bastión con escudo destructible.
-- **Armas nuevas**: granadas, bazuca, cuchillo, hacha, sierra eléctrica.
+- **Hitmarker visual** (chevrons amarillos alrededor del crosshair al impactar). El feedback auditivo ya está en v1.1; el visual quedó diferido por un bug de render del HUD `CanvasLayer` que requiere rediseño.
+- **Indicador de alcance del crosshair** — color verde/amarillo/rojo según la distancia al objetivo apuntado y el `max_range` del arma activa.
+- **Modelo 3D del boss** (Sector 05) — reemplazar la cápsula default por un mesh decente con animaciones básicas.
+- **Versión Android** (port + controles touch).
 - **Multijugador cooperativo** (Fase 5).
 
 Para detalles de arquitectura interna, estado de desarrollo y cómo correr el juego desde código, ver [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="NEXUS"
 config/description="FPS táctico con construcción en tiempo real. Infiltrate. Adapt. Disconnect The Core."
-config/version="1.0"
+config/version="1.1"
 run/main_scene="uid://dqn885mn25ivm"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
