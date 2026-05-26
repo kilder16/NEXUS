@@ -15,6 +15,15 @@ func _ready():
 	# Asaltante mantiene melee original: rango 2.0 y cooldown 1.0.
 	attack_range = 2.0
 	attack_cooldown = 1.0
+	# Anti-rebote ATTACK↔CHASE: con chase_speed=8 el Asaltante sobrepasa
+	# al player y vuelve a CHASE antes de que attack_timer llegue a 0,
+	# así que solo el primer hit se aplicaba.
+	# - exit_factor 2.5 (vs default 1.5) → más sticky en ATTACK.
+	# - settle 0.15s → garantiza ≥1 hit por entrada al estado.
+	# - slowdown a 4u → frena al acercarse, evita overshoot.
+	attack_exit_factor = 2.5
+	attack_settle_time = 0.15
+	proximity_slowdown_distance = 4.0
 	base_color = Color(1.0, 0.85, 0.1)  # Amarillo
 
 # Preserva el patrón melee del Asaltante (la base ahora dispara proyectiles cortos).

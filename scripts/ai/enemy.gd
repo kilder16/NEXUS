@@ -22,6 +22,16 @@ var attack_damage = 1
 var attack_range = 6.0
 var detect_range = 10.0
 var attack_cooldown = 1.5
+# Stickiness del estado ATTACK: salida cuando distance > attack_range * factor.
+# Subclases con chase_speed alto (enemy_fast) suben el factor para evitar
+# rebotar ATTACK↔CHASE por overshoot.
+var attack_exit_factor: float = 1.5
+# Tiempo mínimo en ATTACK antes de poder volver a CHASE (segundos). Asegura
+# que el enemy se asiente y dispare al menos un hit antes de salir.
+var attack_settle_time: float = 0.0
+# Distancia a la que el enemy reduce su velocidad de chase (frenado de
+# proximidad) para no sobrepasar al player. 0 = sin slowdown.
+var proximity_slowdown_distance: float = 0.0
 var base_color = Color(0.8, 0.1, 0.1)
 
 # === PATRULLA ===
@@ -36,6 +46,7 @@ enum State { PATROL, CHASE, ATTACK, DEAD }
 var current_state = State.PATROL
 var gravity = 9.8
 var attack_timer = 0.0
+var _attack_settle_timer: float = 0.0
 
 # === REFERENCIAS ===
 var player = null
@@ -112,20 +123,30 @@ func do_chase(delta):
 	if player == null:
 		current_state = State.PATROL
 		return
-	
+
 	# Distancia horizontal (ignora diferencia de altura player-enemigo)
 	var to_player = player.global_position - global_position
 	to_player.y = 0
 	var distance = to_player.length()
-	
+
 	if distance < attack_range:
 		current_state = State.ATTACK
+		# Settle: tiempo mínimo en ATTACK antes de poder rebotar a CHASE.
+		# attack_timer en 0 garantiza primer hit inmediato al entrar.
+		_attack_settle_timer = attack_settle_time
+		attack_timer = 0.0
 		velocity.x = 0
 		velocity.z = 0
 	else:
+		# Slowdown de proximidad: cuando estamos cerca del player, bajamos
+		# la velocidad para no sobrepasar el rango ATTACK por overshoot.
+		# Subclases rápidas (enemy_fast) lo activan; default 0 = sin slowdown.
+		var effective_speed: float = chase_speed
+		if proximity_slowdown_distance > 0.0 and distance < proximity_slowdown_distance:
+			effective_speed = chase_speed * 0.5
 		var direction = to_player.normalized()
-		velocity.x = direction.x * chase_speed
-		velocity.z = direction.z * chase_speed
+		velocity.x = direction.x * effective_speed
+		velocity.z = direction.z * effective_speed
 		look_at(global_position + direction, Vector3.UP)
 
 func do_attack(delta):
@@ -141,8 +162,13 @@ func do_attack(delta):
 	var to_player = player.global_position - global_position
 	to_player.y = 0
 	var distance = to_player.length()
-	
-	if distance > attack_range * 1.5:
+
+	# Settle timer + attack_exit_factor: previene el rebote ATTACK↔CHASE
+	# en subclases rápidas (enemy_fast con chase_speed=8) cuando el enemy
+	# sobrepasa al player por inercia. Sólo permitimos salir si pasó el
+	# settle Y la distancia excede el factor configurado.
+	_attack_settle_timer -= delta
+	if distance > attack_range * attack_exit_factor and _attack_settle_timer <= 0.0:
 		current_state = State.CHASE
 		return
 	
