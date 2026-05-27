@@ -21,7 +21,7 @@ var attack_damage = 1
 # entrada a ATTACK; subclases melee (ej. enemy_tank) lo bajan a ~2.0.
 var attack_range = 6.0
 var detect_range = 10.0
-var attack_cooldown = 1.5
+var attack_cooldown = 1.2
 # Stickiness del estado ATTACK: salida cuando distance > attack_range * factor.
 # Subclases con chase_speed alto (enemy_fast) suben el factor para evitar
 # rebotar ATTACK↔CHASE por overshoot.

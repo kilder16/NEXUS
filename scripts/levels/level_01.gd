@@ -14,7 +14,7 @@ const OBJECTIVE_HINT: String = "Misión: alcanzar la zona de extracción"
 # + Centinela (ranged 1.5s) hacía pinza demasiado opresiva en el nivel
 # introductorio. Override sólo en level_01: Centinelas pasan a 2.5s entre
 # disparos. Otros niveles mantienen el cooldown default de 1.5s.
-const SENTINEL_COOLDOWN_OVERRIDE: float = 2.5
+const SENTINEL_COOLDOWN_OVERRIDE: float = 2.0
 const ENEMY_BASE_SCRIPT: Script = preload("res://scripts/ai/enemy.gd")
 
 @onready var objective: Area3D = $Objective

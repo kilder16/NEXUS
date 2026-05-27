@@ -16,7 +16,7 @@ func _ready():
 	display_name = "Tirador"
 	attack_range = 12.0
 	detect_range = 15.0
-	attack_cooldown = 1.5
+	attack_cooldown = 1.2
 	base_color = Color(0.6, 0.2, 0.8)  # Púrpura
 
 func do_chase(_delta):
