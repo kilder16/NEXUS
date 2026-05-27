@@ -94,18 +94,18 @@ func _physics_process(delta):
 func do_patrol(delta):
 	if patrol_points.size() == 0:
 		return
-	
+
 	if waiting:
 		patrol_timer -= delta
 		if patrol_timer <= 0:
 			waiting = false
 			current_patrol_index = (current_patrol_index + 1) % patrol_points.size()
 		return
-	
+
 	var target = patrol_points[current_patrol_index]
 	var direction = (target - global_position)
 	direction.y = 0  # Solo moverse en horizontal
-	
+
 	if direction.length() < 0.5:
 		# Llegó al punto, esperar
 		waiting = true
@@ -119,9 +119,9 @@ func do_patrol(delta):
 		# Mirar hacia donde camina
 		look_at(global_position + direction, Vector3.UP)
 
-func do_chase(delta):
+func do_chase(_delta):
 	if player == null:
-		current_state = State.PATROL
+		set_state(State.PATROL)
 		return
 
 	# Distancia horizontal (ignora diferencia de altura player-enemigo)
@@ -130,7 +130,7 @@ func do_chase(delta):
 	var distance = to_player.length()
 
 	if distance < attack_range:
-		current_state = State.ATTACK
+		set_state(State.ATTACK)
 		# Settle: tiempo mínimo en ATTACK antes de poder rebotar a CHASE.
 		# attack_timer en 0 garantiza primer hit inmediato al entrar.
 		_attack_settle_timer = attack_settle_time
@@ -151,7 +151,7 @@ func do_chase(delta):
 
 func do_attack(delta):
 	if player == null:
-		current_state = State.PATROL
+		set_state(State.PATROL)
 		return
 	
 	# FIX: distancia horizontal (consistente con do_chase). Antes usaba distance_to() 3D,
@@ -169,7 +169,7 @@ func do_attack(delta):
 	# settle Y la distancia excede el factor configurado.
 	_attack_settle_timer -= delta
 	if distance > attack_range * attack_exit_factor and _attack_settle_timer <= 0.0:
-		current_state = State.CHASE
+		set_state(State.CHASE)
 		return
 	
 	# Mirar al jugador
@@ -214,10 +214,10 @@ func check_player_distance():
 	var distance = global_position.distance_to(player.global_position)
 	
 	if current_state == State.PATROL and distance < detect_range:
-		current_state = State.CHASE
+		set_state(State.CHASE)
 		print("¡ENEMIGO TE DETECTÓ!")
 	elif current_state == State.CHASE and distance > detect_range * 1.5:
-		current_state = State.PATROL
+		set_state(State.PATROL)
 		print("Enemigo perdió al jugador")
 
 func take_damage(amount: int = 1):
@@ -270,7 +270,7 @@ func flash_damage():
 func die():
 	if current_state == State.DEAD:
 		return
-	current_state = State.DEAD
+	set_state(State.DEAD)
 	died.emit(self)
 	AudioManager.play_sfx("enemy_death")
 	ParticleManager.spawn_enemy_death(global_position)
@@ -279,3 +279,25 @@ func die():
 	var tween = create_tween()
 	tween.tween_property(self, "scale", Vector3(0.1, 0.1, 0.1), 0.3)
 	tween.tween_callback(queue_free)
+
+# Setter centralizado de estado. Cualquier transición debe pasar por acá
+# para que las subclases con animaciones (ej. boss_final.gd con modelo 3D
+# Mixamo) puedan engancharse via _on_state_changed.
+func set_state(new_state: State) -> void:
+	if new_state == current_state:
+		return
+	current_state = new_state
+	_on_state_changed(new_state)
+
+# Hook virtual. Las subclases con animaciones lo overriden para disparar
+# el AnimationPlayer correspondiente al estado.
+func _on_state_changed(_new_state: State) -> void:
+	pass
+
+# Hook virtual. Subclases con animaciones one-shot por hit lo overriden
+# (ej. boss_final.gd reinicia la animacion "attack" en cada swing).
+# Default vacio = no-op para grunts genericos. Declarado en la base para
+# que llamadas desde clases intermedias (enemy_tank.gd) parseen sin que
+# GDScript exija has_method() runtime check.
+func _on_attack_trigger() -> void:
+	pass

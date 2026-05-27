@@ -33,7 +33,14 @@ func _ready():
 func _perform_attack() -> void:
 	if player == null:
 		return
-	print("¡BASTIÓN GOLPEA! Daño: ", attack_damage)
+	# Hook virtual para subclases que necesitan disparar feedback por hit
+	# (ej. boss_final.gd reinicia la animación "attack" en cada golpe para
+	# que el swing se reproduzca completo). Default vacío en enemy.gd, así
+	# que los Bastiones genéricos no se ven afectados.
+	_on_attack_trigger()
+	# display_name dinámico: "Bastión" para grunts, "JEFE: NÚCLEO" para
+	# el boss (overrideado en boss_final.gd::_ready).
+	print("¡", display_name, " GOLPEA! Daño: ", attack_damage)
 	if player.has_method("take_damage"):
 		player.take_damage(attack_damage, global_position)
 
