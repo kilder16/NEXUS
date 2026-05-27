@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://g7vq5330lkgi"]
+
+[ext_resource type="Script" path="res://scripts/ai/boss_final.gd" id="1_boss"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss"]
+
+[sub_resource type="StandardMaterial3D" id="BossMat"]
+albedo_color = Color(0.5, 0.05, 0.05, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_boss"]
+material = SubResource("BossMat")
+
+[sub_resource type="StandardMaterial3D" id="ShieldAuraMat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0.866, 1, 0.18)
+emission_enabled = true
+emission = Color(0, 0.866, 1, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="SphereMesh" id="ShieldAuraMesh"]
+material = SubResource("ShieldAuraMat")
+radius = 0.95
+height = 1.9
+radial_segments = 24
+rings = 12
+
+[sub_resource type="SphereShape3D" id="HeadShape"]
+radius = 0.35
+
+[node name="Enemy" type="CharacterBody3D"]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+script = ExtResource("1_boss")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_boss")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_boss")
+
+[node name="HeadHitbox" type="Area3D" parent="." groups=["head_hitbox"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
+shape = SubResource("HeadShape")
+
+[node name="ShieldVisual" type="Node3D" parent="."]
+
+[node name="AuraMesh" type="MeshInstance3D" parent="ShieldVisual"]
+mesh = SubResource("ShieldAuraMesh")
+
+[node name="AuraLight" type="OmniLight3D" parent="ShieldVisual"]
+light_color = Color(0, 0.866, 1, 1)
+light_energy = 0.8
+omni_range = 2.5
+
+[node name="BossLight" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.2, 0.2, 1)
+light_energy = 0.5
+omni_range = 3.0

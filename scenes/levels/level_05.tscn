@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://5df4hbaukug3" path="res://scenes/levels/objective.tscn" id="2_objective"]
 [ext_resource type="PackedScene" uid="uid://c68uvd23njnbf" path="res://scenes/enemies/enemy.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" uid="uid://dbm04swh70bfi" path="res://scenes/enemies/enemy_fast.tscn" id="4_enemy_fast"]
-[ext_resource type="PackedScene" uid="uid://b4yd8ktdavv5d" path="res://scenes/enemies/enemy_tank.tscn" id="5_enemy_tank"]
+[ext_resource type="PackedScene" uid="uid://bossfinaln5xa01" path="res://scenes/enemies/boss_final.tscn" id="5_boss_final"]
 [ext_resource type="PackedScene" uid="uid://v0aevj5kyk2" path="res://scenes/enemies/enemy_ranged.tscn" id="6_enemy_ranged"]
 [ext_resource type="PackedScene" uid="uid://dsgm4igmlmndq" path="res://scenes/ui/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://c3ticavbpd2cr" path="res://scenes/ui/pause_menu.tscn" id="8_pause"]
@@ -390,7 +390,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7, -5)
 material_override = SubResource("emergency_red_mat")
 size = Vector3(0.2, 0.05, 4)
 
-[node name="BossFinal" parent="." unique_id=576320581 instance=ExtResource("5_enemy_tank")]
+[node name="BossFinal" parent="." unique_id=576320581 instance=ExtResource("5_boss_final")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 3, -5)
 
 [node name="EnemyFast1" parent="." unique_id=1184579355 instance=ExtResource("4_enemy_fast")]

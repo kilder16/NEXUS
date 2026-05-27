@@ -45,19 +45,10 @@ func _ready() -> void:
 	boss.died.connect(_on_boss_died)
 
 	start_time = Time.get_ticks_msec() / 1000.0
-
-	# Override boss HP tras el _ready de enemy_tank (default = 8 post-balance).
-	# max_health y display_name también deben sincronizarse para que el
-	# indicador del HUD muestre "50 / 50" y el nombre correcto del boss.
-	# Shield del boss también overrideado a 15 (default Bastión = 4): el boss
-	# está explícitamente más blindado que un Bastión normal.
-	await get_tree().process_frame
-	boss.health = 50
-	boss.max_health = 50
-	boss.shield = 15
-	boss.max_shield = 15
-	boss.display_name = "JEFE: NÚCLEO"
-	print("[Level05] Boss HP override: ", boss.health, " Shield: ", boss.shield)
+	# Los stats del boss (HP 50, escudo 15, display_name) ahora viven en
+	# scripts/ai/boss_final.gd::_ready. Mejor encapsulación: el boss conoce
+	# sus propios stats y este level no necesita esperar process_frame
+	# para overridearlos manualmente.
 
 func _on_enemy_died(_e: Node) -> void:
 	enemies_killed += 1
